@@ -20,13 +20,13 @@
         "setupFile": "npp.8.9.8.Installer.x64.msi",
         "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8/npp.8.9.8.Installer.x64.msi",
         "upgradeBehavior": "in-place",
-        "installCommand": null,
-        "uninstallCommand": null,
+        "installCommand": "msiexec /i npp.8.9.8.Installer.x64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {224C0E17-FB79-4AE2-9A47-5556FCEF39C4} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": null
+          "productCode": "{224C0E17-FB79-4AE2-9A47-5556FCEF39C4}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
@@ -91,13 +91,13 @@
         "setupFile": "googlechromestandaloneenterprise64.msi",
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "upgradeBehavior": "in-place",
-        "installCommand": null,
-        "uninstallCommand": null,
+        "installCommand": "msiexec /i googlechromestandaloneenterprise64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": null
+          "productCode": "{C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
