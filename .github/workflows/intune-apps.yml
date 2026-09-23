@@ -5,10 +5,20 @@ on:
     - cron: '15 3,15 * * *'
   workflow_dispatch:
     inputs:
-      apply_catalog_update:
-        description: Update catalog and deploy newer versions
+      update_catalog:
+        description: Check vendors and update catalog versions
+        required: true
+        default: false
+        type: boolean
+      package:
+        description: Download installers and build .intunewin packages
         required: true
         default: true
+        type: boolean
+      deploy:
+        description: Deploy generated packages to Intune
+        required: true
+        default: false
         type: boolean
 
 permissions:
@@ -17,6 +27,7 @@ permissions:
 
 jobs:
   update:
+    if: github.event_name == 'schedule' || inputs.update_catalog
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,7 +35,7 @@ jobs:
         shell: pwsh
         run: .\scripts\Update-ApplicationCatalog.ps1
       - name: Apply catalog update
-        if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update
+        if: github.event_name == 'workflow_dispatch' && inputs.update_catalog
         shell: pwsh
         run: .\scripts\Update-ApplicationCatalog.ps1 -Apply
       - name: Commit catalog state
@@ -41,7 +52,7 @@ jobs:
 
   package:
     needs: update
-    if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update == true
+    if: always() && github.event_name == 'workflow_dispatch' && (inputs.package || inputs.deploy) && (needs.update.result == 'success' || needs.update.result == 'skipped')
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,7 +81,7 @@ jobs:
 
   deploy:
     needs: package
-    if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update == true
+    if: always() && github.event_name == 'workflow_dispatch' && inputs.deploy && needs.package.result == 'success'
     runs-on: windows-latest
     environment: intune-production
     steps:

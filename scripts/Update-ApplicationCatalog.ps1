@@ -31,14 +31,33 @@ foreach ($app in $catalog.applications) {
     elseif ($app.source.assetRegex) {
         $app.source.assetRegex
     }
+    elseif ($app.source.versionSource -eq 'installer') {
+        $null
+    }
     else {
         throw "$($app.id): source.versionRegex or source.assetRegex is required."
     }
-    $match = [regex]::Match($assetName, $versionPattern)
-    if (-not $match.Success -or -not $match.Groups['version'].Success) {
+    $match = if ($versionPattern) { [regex]::Match($assetName, $versionPattern) } else { $null }
+    if ($app.source.versionSource -eq 'installer') {
+        $probePath = Join-Path $DownloadRoot $assetName
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $probePath
+        $metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $probePath -InstallerType $app.installerType
+        if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
+            throw "$($app.id): installer metadata returned no version."
+        }
+        $newVersion = (($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json).version
+    }
+    elseif (-not $match.Success -or -not $match.Groups['version'].Success) {
         throw "$($app.id): version pattern did not produce a named 'version' group for '$assetName'."
     }
-    $newVersion = $match.Groups['version'].Value
+    else {
+        if ($app.source.versionFormat) {
+            $newVersion = $app.source.versionFormat -f $match.Groups['major'].Value, $match.Groups['minor'].Value
+        }
+        else {
+            $newVersion = $match.Groups['version'].Value
+        }
+    }
     if (-not ($app.package.PSObject.Properties.Name -contains 'downloadUrl')) {
         $app.package | Add-Member -NotePropertyName 'downloadUrl' -NotePropertyValue $null
     }
