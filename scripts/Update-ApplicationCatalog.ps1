@@ -39,6 +39,9 @@ foreach ($app in $catalog.applications) {
         throw "$($app.id): version pattern did not produce a named 'version' group for '$assetName'."
     }
     $newVersion = $match.Groups['version'].Value
+    if (-not ($app.package.PSObject.Properties.Name -contains 'downloadUrl')) {
+        $app.package | Add-Member -NotePropertyName 'downloadUrl' -NotePropertyValue $null
+    }
     $app.package.setupFile = $assetName
     $app.package.downloadUrl = $downloadUrl
     $app.availableVersion = $newVersion
