@@ -25,13 +25,14 @@ if ($InstallerType -eq 'msi') {
     $record = $view.Fetch()
     $version = if ($record) { $record.StringData(1) } else { $null }
     $view.Close()
-    [pscustomobject]@{
+    $metadata = [pscustomobject]@{
         version = $version
         productCode = $productCode
         installCommand = "msiexec /i $([IO.Path]::GetFileName($InstallerPath)) /qn /norestart"
         uninstallCommand = if ($productCode) { "msiexec /x $productCode /qn /norestart" } else { $null }
         detectionRule = [pscustomobject]@{ type = 'msi'; productCode = $productCode }
     }
+    $metadata | ConvertTo-Json -Depth 10 -Compress
     exit 0
 }
 
@@ -40,11 +41,11 @@ $version = $file.VersionInfo.ProductVersion
 if ([string]::IsNullOrWhiteSpace($version)) {
     throw "The EXE has no ProductVersion resource. Add install/uninstall commands and an explicit detection rule to the catalog."
 }
-[pscustomobject]@{
+$metadata = [pscustomobject]@{
     version = $version
     productCode = $null
     installCommand = $null
     uninstallCommand = $null
     detectionRule = [pscustomobject]@{ type = 'file'; path = $null; fileOrFolderName = $null; detectionMethod = 'exists' }
 }
-
+$metadata | ConvertTo-Json -Depth 10 -Compress

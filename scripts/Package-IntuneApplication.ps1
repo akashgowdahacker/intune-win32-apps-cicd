@@ -16,7 +16,11 @@ New-Item -ItemType Directory -Path $source,$package -Force | Out-Null
 $installer = Join-Path $source $Application.package.setupFile
 Invoke-WebRequest -Uri $Application.package.downloadUrl -OutFile $installer
 
-$metadata = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType $Application.installerType | ConvertFrom-Json
+$metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType $Application.installerType
+if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
+    throw "Installer metadata extraction returned no output for '$installer'."
+}
+$metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
 if ($Application.installerType -eq 'msi') {
     $Application.package.installCommand = $metadata.installCommand
     $Application.package.uninstallCommand = $metadata.uninstallCommand
