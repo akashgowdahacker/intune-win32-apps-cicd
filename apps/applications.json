@@ -17,6 +17,7 @@
       "previousVersion": null,
       "package": {
         "setupFile": "npp.8.9.5.Installer.x64.msi",
+        "upgradeBehavior": "in-place",
         "installCommand": null,
         "uninstallCommand": null,
         "installExperience": "system",
@@ -34,4 +35,3 @@
     }
   ]
 }
-
