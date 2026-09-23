@@ -51,8 +51,13 @@ foreach ($app in $catalog.applications) {
         }
         $newVersion = (($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json).version
     }
-    elseif (-not $match.Success -or -not $match.Groups['version'].Success) {
-        throw "$($app.id): version pattern did not produce a named 'version' group for '$assetName'."
+    elseif (
+        -not $match.Success -or
+        ($app.source.versionFormat -and
+            (-not $match.Groups['major'].Success -or -not $match.Groups['minor'].Success)) -or
+        (-not $app.source.versionFormat -and -not $match.Groups['version'].Success)
+    ) {
+        throw "$($app.id): version pattern did not produce the required version groups for '$assetName'."
     }
     else {
         if ($app.source.versionFormat) {
