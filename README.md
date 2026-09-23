@@ -33,6 +33,12 @@ For MSI packages, `Get-InstallerMetadata.ps1` reads the MSI Property table:
 * Install and uninstall commands are generated as
   `msiexec /i <file> /qn /norestart` and
   `msiexec /x <ProductCode> /qn /norestart`.
+* MSI packages use `upgradeBehavior: "in-place"` by default. The deployment
+  adapter must update the existing Intune Win32 app instead of creating a new
+  app or uninstalling the old one. When the vendor MSI is authored as a major
+  upgrade, Windows Installer upgrades the existing installation during
+  `msiexec /i`; this depends on the vendor's MSI upgrade table and cannot be
+  forced safely by Intune.
 
 For EXE packages, there is no reliable universal uninstall command or
 detection rule. The installer must be tested in a Windows VM and the catalog
@@ -54,7 +60,8 @@ The adapter should:
 1. Find an existing Win32 app by a stable identifier such as `id`.
 2. Skip upload when the deployed version equals `currentVersion`.
 3. Upload the package and update metadata/detection/requirements.
-4. Preserve the previous app until the new app is verified.
+4. Preserve the existing app identity and assignments; do not uninstall it or
+   create a second app for an in-place upgrade.
 5. Remove versions older than n-1 only after a successful deployment.
 
 Never commit installer binaries or credentials. Keep the production

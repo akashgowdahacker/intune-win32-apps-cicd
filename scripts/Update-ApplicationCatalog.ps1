@@ -25,9 +25,18 @@ foreach ($app in $catalog.applications) {
         throw "$($app.id): unsupported source type '$($app.source.type)'. Use github-release or direct-url."
     }
 
-    $match = [regex]::Match($assetName, $app.source.versionRegex)
+    $versionPattern = if ($app.source.versionRegex) {
+        $app.source.versionRegex
+    }
+    elseif ($app.source.assetRegex) {
+        $app.source.assetRegex
+    }
+    else {
+        throw "$($app.id): source.versionRegex or source.assetRegex is required."
+    }
+    $match = [regex]::Match($assetName, $versionPattern)
     if (-not $match.Success -or -not $match.Groups['version'].Success) {
-        throw "$($app.id): versionRegex did not produce a named 'version' group for '$assetName'."
+        throw "$($app.id): version pattern did not produce a named 'version' group for '$assetName'."
     }
     $newVersion = $match.Groups['version'].Value
     $app.package.setupFile = $assetName

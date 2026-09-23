@@ -21,6 +21,9 @@ if ($Application.installerType -eq 'msi') {
     $Application.package.installCommand = $metadata.installCommand
     $Application.package.uninstallCommand = $metadata.uninstallCommand
     $Application.package.detectionRule = $metadata.detectionRule
+    if (-not $Application.package.upgradeBehavior) {
+        $Application.package.upgradeBehavior = 'in-place'
+    }
 }
 if (-not (Test-Path -LiteralPath $ToolPath)) {
     Invoke-WebRequest -Uri 'https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe' -OutFile $ToolPath
@@ -30,4 +33,3 @@ if ($LASTEXITCODE -ne 0) { throw "IntuneWinAppUtil failed with exit code $LASTEX
 $result = Get-ChildItem -LiteralPath $package -Filter '*.intunewin' | Select-Object -First 1
 if (-not $result) { throw "No .intunewin package was produced." }
 [pscustomobject]@{ packagePath = $result.FullName; installerPath = $installer; metadata = $metadata }
-
