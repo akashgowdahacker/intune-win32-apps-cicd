@@ -1,0 +1,6 @@
+artifacts/
+downloads/
+output/
+*.intunewin
+IntuneWinAppUtil.exe
+

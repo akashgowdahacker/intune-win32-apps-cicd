@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "applications": [
+    {
+      "id": "notepadplusplus",
+      "displayName": "Notepad++",
+      "publisher": "Notepad++ Team",
+      "description": "Notepad++ x64 - deployed via CI/CD and Microsoft Intune",
+      "installerType": "msi",
+      "architecture": "x64",
+      "source": {
+        "type": "github-release",
+        "repository": "notepad-plus-plus/notepad-plus-plus",
+        "assetRegex": "^npp\\.(?<version>[0-9.]+)\\.Installer\\.x64\\.msi$"
+      },
+      "currentVersion": "8.9.5",
+      "previousVersion": null,
+      "package": {
+        "setupFile": "npp.8.9.5.Installer.x64.msi",
+        "installCommand": null,
+        "uninstallCommand": null,
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": null
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      }
+    }
+  ]
+}
+
