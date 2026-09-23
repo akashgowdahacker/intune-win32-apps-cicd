@@ -8,10 +8,14 @@ param(
 $ErrorActionPreference = 'Stop'
 $catalog = Get-Content -LiteralPath $CatalogPath -Raw | ConvertFrom-Json
 New-Item -ItemType Directory -Path $DownloadRoot -Force | Out-Null
+$githubHeaders = @{ 'User-Agent' = 'intune-packaging'; 'Accept' = 'application/vnd.github+json' }
+if (-not [string]::IsNullOrWhiteSpace($env:GITHUB_TOKEN)) {
+    $githubHeaders.Authorization = "Bearer $($env:GITHUB_TOKEN)"
+}
 
 foreach ($app in $catalog.applications) {
     if ($app.source.type -eq 'github-release') {
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$($app.source.repository)/releases/latest" -Headers @{ 'User-Agent' = 'intune-packaging' }
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$($app.source.repository)/releases/latest" -Headers $githubHeaders
         $asset = $release.assets | Where-Object { $_.name -match $app.source.assetRegex } | Select-Object -First 1
         if (-not $asset) { throw "$($app.id): no release asset matched $($app.source.assetRegex)" }
         $assetName = $asset.name

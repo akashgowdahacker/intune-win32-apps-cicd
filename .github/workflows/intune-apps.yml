@@ -33,10 +33,14 @@ jobs:
       - uses: actions/checkout@v4
       - name: Check vendor releases
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: .\scripts\Update-ApplicationCatalog.ps1
       - name: Apply catalog update
         if: github.event_name == 'workflow_dispatch' && inputs.update_catalog
         shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: .\scripts\Update-ApplicationCatalog.ps1 -Apply
       - name: Commit catalog state
         shell: pwsh
