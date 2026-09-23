@@ -34,6 +34,77 @@
           "minimumDiskSpaceInMB": 500
         }
       }
+    },
+    {
+      "id": "7zip",
+      "displayName": "7-Zip",
+      "publisher": "Igor Pavlov",
+      "description": "7-Zip x64 - deployed via CI/CD and Microsoft Intune",
+      "installerType": "exe",
+      "architecture": "x64",
+      "source": {
+        "type": "github-release",
+        "repository": "ip7z/7zip",
+        "assetRegex": "^7z(?<major>[0-9]{2})(?<minor>[0-9]{2})-x64\\.exe$",
+        "versionFormat": "{0}.{1}"
+      },
+      "currentVersion": "26.03",
+      "previousVersion": null,
+      "availableVersion": null,
+      "package": {
+        "setupFile": "7z2603-x64.exe",
+        "downloadUrl": null,
+        "upgradeBehavior": "in-place",
+        "installCommand": "7z2603-x64.exe /S",
+        "uninstallCommand": "\"%ProgramFiles%\\7-Zip\\Uninstall.exe\" /S",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "file",
+          "path": "C:\\Program Files\\7-Zip",
+          "fileOrFolderName": "7zFM.exe",
+          "detectionMethod": "exists"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 100
+        }
+      }
+    },
+    {
+      "id": "google-chrome",
+      "displayName": "Google Chrome Enterprise",
+      "publisher": "Google LLC",
+      "description": "Google Chrome Enterprise x64 - deployed via CI/CD and Microsoft Intune",
+      "installerType": "msi",
+      "architecture": "x64",
+      "source": {
+        "type": "direct-url",
+        "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
+        "versionSource": "installer"
+      },
+      "currentVersion": "0.0.0",
+      "previousVersion": null,
+      "availableVersion": null,
+      "package": {
+        "setupFile": "googlechromestandaloneenterprise64.msi",
+        "downloadUrl": null,
+        "upgradeBehavior": "in-place",
+        "installCommand": null,
+        "uninstallCommand": null,
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": null
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      }
     }
   ]
 }

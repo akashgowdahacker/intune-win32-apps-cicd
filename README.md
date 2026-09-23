@@ -15,10 +15,11 @@ URL and a `versionRegex` containing a named `version` group, for example
 workflow unless the vendor provides a stable API or download URL.
 
 The schedule runs twice daily. It only changes the catalog when the manual
-dispatch input `apply_catalog_update` is enabled. This avoids silently
-deploying a vendor release from a scheduled check. For fully automatic
-deployment, change the scheduled job to pass `-Apply`, then protect the
-`intune-production` environment with required reviewers.
+dispatch input `update_catalog` is enabled. Manual runs expose independent
+checkboxes for `update_catalog`, `package`, and `deploy`. Packaging also runs
+automatically when `deploy` is selected because a fresh workflow runner needs
+an artifact. This avoids silently deploying a vendor release from a scheduled
+check. Protect the `intune-production` environment with required reviewers.
 
 The n/n-1 retention policy is represented by `currentVersion` and
 `previousVersion`; package artifacts are retained for 14 days. If releases are
@@ -69,3 +70,10 @@ The adapter should:
 
 Never commit installer binaries or credentials. Keep the production
 environment approval enabled before wiring the final deploy step.
+
+## Included applications
+
+The catalog includes Notepad++, 7-Zip x64, and Google Chrome Enterprise x64.
+7-Zip is discovered from its GitHub release assets. Chrome uses Google's
+stable Enterprise MSI URL and reads its version and MSI product code from the
+downloaded installer because the URL does not contain a version.
