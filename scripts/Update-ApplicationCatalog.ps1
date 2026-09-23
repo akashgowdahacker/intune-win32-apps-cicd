@@ -42,6 +42,9 @@ foreach ($app in $catalog.applications) {
     if (-not ($app.package.PSObject.Properties.Name -contains 'downloadUrl')) {
         $app.package | Add-Member -NotePropertyName 'downloadUrl' -NotePropertyValue $null
     }
+    if (-not ($app.PSObject.Properties.Name -contains 'availableVersion')) {
+        $app | Add-Member -NotePropertyName 'availableVersion' -NotePropertyValue $null
+    }
     $app.package.setupFile = $assetName
     $app.package.downloadUrl = $downloadUrl
     $app.availableVersion = $newVersion

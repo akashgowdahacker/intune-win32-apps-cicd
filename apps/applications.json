@@ -15,6 +15,7 @@
       },
       "currentVersion": "8.9.5",
       "previousVersion": null,
+      "availableVersion": null,
       "package": {
         "setupFile": "npp.8.9.5.Installer.x64.msi",
         "downloadUrl": null,
