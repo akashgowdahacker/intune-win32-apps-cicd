@@ -1,0 +1,83 @@
+name: Intune application lifecycle
+
+on:
+  schedule:
+    - cron: '15 3,15 * * *'
+  workflow_dispatch:
+    inputs:
+      apply_catalog_update:
+        description: Update catalog and deploy newer versions
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  update:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check vendor releases
+        shell: pwsh
+        run: .\scripts\Update-ApplicationCatalog.ps1
+      - name: Apply catalog update
+        if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update
+        shell: pwsh
+        run: .\scripts\Update-ApplicationCatalog.ps1 -Apply
+      - name: Commit catalog state
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/applications.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "chore: update Intune application catalog"
+            git push
+          }
+
+  package:
+    needs: update
+    if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update == true
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package applications
+        shell: pwsh
+        run: |
+          $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
+          foreach ($app in $catalog.applications) {
+            .\scripts\Package-IntuneApplication.ps1 -Application $app -OutputDirectory ".\artifacts\$($app.id)"
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intune-packages
+          path: artifacts/**/*.intunewin
+          retention-days: 14
+
+  deploy:
+    needs: package
+    if: github.event_name == 'workflow_dispatch' && inputs.apply_catalog_update == true
+    runs-on: windows-latest
+    environment: intune-production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: intune-packages
+          path: artifacts
+      - name: Authenticate to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy to Intune
+        shell: pwsh
+        run: |
+          throw "Connect your approved Intune Graph deployment adapter here (see README). Packaging and catalog update are provider-neutral."
