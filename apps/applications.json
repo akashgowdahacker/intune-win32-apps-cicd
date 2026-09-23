@@ -50,10 +50,10 @@
       },
       "currentVersion": "26.03",
       "previousVersion": null,
-      "availableVersion": null,
+      "availableVersion": "26.03",
       "package": {
         "setupFile": "7z2603-x64.exe",
-        "downloadUrl": null,
+        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
         "upgradeBehavior": "in-place",
         "installCommand": "7z2603-x64.exe /S",
         "uninstallCommand": "\"%ProgramFiles%\\7-Zip\\Uninstall.exe\" /S",
@@ -84,12 +84,12 @@
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "versionSource": "installer"
       },
-      "currentVersion": "0.0.0",
-      "previousVersion": null,
+      "currentVersion": "154.0.8037.58",
+      "previousVersion": "0.0.0",
       "availableVersion": null,
       "package": {
         "setupFile": "googlechromestandaloneenterprise64.msi",
-        "downloadUrl": null,
+        "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "upgradeBehavior": "in-place",
         "installCommand": null,
         "uninstallCommand": null,
