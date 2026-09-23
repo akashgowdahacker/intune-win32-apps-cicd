@@ -13,12 +13,12 @@
         "repository": "notepad-plus-plus/notepad-plus-plus",
         "assetRegex": "^npp\\.(?<version>[0-9.]+)\\.Installer\\.x64\\.msi$"
       },
-      "currentVersion": "8.9.5",
-      "previousVersion": null,
+      "currentVersion": "8.9.8",
+      "previousVersion": "8.9.5",
       "availableVersion": null,
       "package": {
-        "setupFile": "npp.8.9.5.Installer.x64.msi",
-        "downloadUrl": null,
+        "setupFile": "npp.8.9.8.Installer.x64.msi",
+        "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8/npp.8.9.8.Installer.x64.msi",
         "upgradeBehavior": "in-place",
         "installCommand": null,
         "uninstallCommand": null,
