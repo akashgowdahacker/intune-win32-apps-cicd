@@ -13,6 +13,8 @@ another vendor, use `source.type: "direct-url"` with a stable vendor download
 URL and a `versionRegex` containing a named `version` group, for example
 `"ChromeSetup_(?<version>[0-9.]+).msi"`. Do not scrape a web page in the
 workflow unless the vendor provides a stable API or download URL.
+GitHub release lookups use the Actions `GITHUB_TOKEN` in CI to avoid
+unauthenticated API rate limits.
 
 The schedule runs twice daily. It only changes the catalog when the manual
 dispatch input `update_catalog` is enabled. Manual runs expose independent
