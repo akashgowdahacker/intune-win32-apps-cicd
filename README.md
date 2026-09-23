@@ -33,6 +33,9 @@ For MSI packages, `Get-InstallerMetadata.ps1` reads the MSI Property table:
 * Install and uninstall commands are generated as
   `msiexec /i <file> /qn /norestart` and
   `msiexec /x <ProductCode> /qn /norestart`.
+The packaging job persists these detected values back into
+`apps/applications.json` and commits the catalog update, so the catalog remains
+the source of truth for the later Intune deployment step.
 * MSI packages use `upgradeBehavior: "in-place"` by default. The deployment
   adapter must update the existing Intune Win32 app instead of creating a new
   app or uninstalling the old one. When the vendor MSI is authored as a major

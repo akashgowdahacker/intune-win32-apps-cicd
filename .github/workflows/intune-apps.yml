@@ -52,7 +52,15 @@ jobs:
         run: |
           $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
           foreach ($app in $catalog.applications) {
-            .\scripts\Package-IntuneApplication.ps1 -Application $app -OutputDirectory ".\artifacts\$($app.id)"
+            .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
+          }
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/applications.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "chore: persist detected installer metadata"
+            git push
           }
       - uses: actions/upload-artifact@v4
         with:
