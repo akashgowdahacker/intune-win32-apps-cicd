@@ -54,7 +54,8 @@
       "assignments": [
         {
           "groupId": "70fa4f45-c587-4799-b409-ef4a3ad4a2bf",
-          "intent": "available"
+          "intent": "available",
+          "notifications": "hideAll"
         }
       ],
       "package": {

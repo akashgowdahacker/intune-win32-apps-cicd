@@ -98,6 +98,12 @@ foreach ($assignment in $app.assignments) {
     if ($assignment.intent -notin @('available', 'required', 'uninstall')) {
         throw "Unsupported assignment intent '$($assignment.intent)' for '$ApplicationId'."
     }
+    if (-not $assignment.notifications) {
+        $assignment.notifications = 'hideAll'
+    }
+    if ($assignment.notifications -notin @('showAll', 'showReboot', 'hideAll')) {
+        throw "Unsupported assignment notification setting '$($assignment.notifications)' for '$ApplicationId'."
+    }
     if ($assignment.groupId -notmatch '^[0-9a-fA-F-]{36}$') {
         throw "Invalid Entra group object ID '$($assignment.groupId)' for '$ApplicationId'."
     }
@@ -121,7 +127,37 @@ foreach ($assignment in $app.assignments) {
         if ($targetAssignments[0].target.deviceAndAppManagementAssignmentFilterId) {
             throw "The existing assignment for group '$($assignment.groupId)' has a filter; refusing to treat it as the unfiltered catalog assignment."
         }
-        Write-Host "Assignment already exists: group $($assignment.groupId), intent $($assignment.intent); no change needed."
+        if ($targetAssignments[0].source -eq 'policySets') {
+            throw "The existing assignment for group '$($assignment.groupId)' is managed by a policy set and cannot be updated directly."
+        }
+        if ($targetAssignments[0].settings.notifications -ne $assignment.notifications) {
+            $assignmentSettings = $targetAssignments[0].settings |
+                ConvertTo-Json -Depth 20 |
+                ConvertFrom-Json -AsHashtable
+            $assignmentTarget = $targetAssignments[0].target |
+                ConvertTo-Json -Depth 20 |
+                ConvertFrom-Json -AsHashtable
+            $assignmentSettings.notifications = $assignment.notifications
+            $assignmentUpdate = @{
+                '@odata.type' = '#microsoft.graph.mobileAppAssignment'
+                intent = $targetAssignments[0].intent
+                target = $assignmentTarget
+                settings = $assignmentSettings
+            }
+            $updatedAssignment = Invoke-RestMethod `
+                -Method Patch `
+                -Uri "$assignmentsUri/$($targetAssignments[0].id)" `
+                -Headers $authenticationHeader `
+                -ContentType 'application/json' `
+                -Body ($assignmentUpdate | ConvertTo-Json -Depth 20)
+            if (-not $updatedAssignment -or $updatedAssignment.settings.notifications -ne $assignment.notifications) {
+                throw "Graph did not confirm notification setting '$($assignment.notifications)' for group '$($assignment.groupId)'."
+            }
+            Write-Host "Updated group $($assignment.groupId) assignment notifications to '$($assignment.notifications)'."
+        }
+        else {
+            Write-Host "Assignment already matches catalog: group $($assignment.groupId), intent $($assignment.intent), notifications $($assignment.notifications)."
+        }
         continue
     }
 
@@ -137,7 +173,7 @@ foreach ($assignment in $app.assignments) {
         }
         settings = @{
             '@odata.type' = '#microsoft.graph.win32LobAppAssignmentSettings'
-            notifications = 'showAll'
+            notifications = $assignment.notifications
             restartSettings = $null
             deliveryOptimizationPriority = 'notConfigured'
             installTimeSettings = $null
@@ -152,5 +188,8 @@ foreach ($assignment in $app.assignments) {
     if (-not $createdAssignment -or -not $createdAssignment.id) {
         throw "Graph did not confirm creation of the '$($assignment.intent)' assignment for group '$($assignment.groupId)'."
     }
-    Write-Host "Created '$($assignment.intent)' assignment for group $($assignment.groupId) on '$($app.displayName)' (assignment ID: $($createdAssignment.id))."
+    if ($createdAssignment.settings.notifications -ne $assignment.notifications) {
+        throw "Assignment was created but Graph returned notification setting '$($createdAssignment.settings.notifications)' instead of '$($assignment.notifications)'."
+    }
+    Write-Host "Created '$($assignment.intent)' assignment for group $($assignment.groupId) on '$($app.displayName)' with notifications '$($assignment.notifications)' (assignment ID: $($createdAssignment.id))."
 }
