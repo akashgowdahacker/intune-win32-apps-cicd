@@ -20,14 +20,22 @@ on:
         required: true
         default: false
         type: boolean
+      application_id:
+        description: Application from the catalog
+        required: true
+        type: choice
+        default: 7zip
+        options:
+          - 7zip
+          - google-chrome
+          - notepadplusplus
 
 permissions:
   contents: write
-  id-token: write
 
 jobs:
   update:
-    if: github.event_name == 'schedule' || inputs.update_catalog
+    if: github.event_name == 'schedule' || inputs.update_catalog || inputs.package || inputs.deploy
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,13 +43,21 @@ jobs:
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: .\scripts\Update-ApplicationCatalog.ps1
+          APPLICATION_ID: ${{ inputs.application_id }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:APPLICATION_ID)) {
+            .\scripts\Update-ApplicationCatalog.ps1
+          }
+          else {
+            .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID
+          }
       - name: Apply catalog update
-        if: github.event_name == 'workflow_dispatch' && inputs.update_catalog
+        if: github.event_name == 'workflow_dispatch' && (inputs.update_catalog || inputs.deploy)
         shell: pwsh
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: .\scripts\Update-ApplicationCatalog.ps1 -Apply
+          APPLICATION_ID: ${{ inputs.application_id }}
+        run: .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID -Apply
       - name: Commit catalog state
         shell: pwsh
         run: |
@@ -66,9 +82,9 @@ jobs:
         shell: pwsh
         run: |
           $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
-          foreach ($app in $catalog.applications) {
-            .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
-          }
+          $app = $catalog.applications | Where-Object id -eq '${{ inputs.application_id }}' | Select-Object -First 1
+          if (-not $app) { throw "Application '${{ inputs.application_id }}' not found in catalog." }
+          .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/applications.json
@@ -90,17 +106,18 @@ jobs:
     environment: intune-production
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/download-artifact@v4
         with:
           name: intune-packages
           path: artifacts
-      - name: Authenticate to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Deploy to Intune
         shell: pwsh
+        env:
+          INTUNE_TENANT_ID: ${{ secrets.INTUNE_TENANT_ID }}
+          INTUNE_CLIENT_ID: ${{ secrets.INTUNE_CLIENT_ID }}
+          INTUNE_CLIENT_SECRET: ${{ secrets.INTUNE_CLIENT_SECRET }}
+          APPLICATION_ID: ${{ inputs.application_id }}
         run: |
-          throw "Connect your approved Intune Graph deployment adapter here (see README). Packaging and catalog update are provider-neutral."
+          .\scripts\Deploy-IntuneApplication.ps1 -ApplicationId $env:APPLICATION_ID -CatalogPath .\apps\applications.json -PackageRoot .\artifacts

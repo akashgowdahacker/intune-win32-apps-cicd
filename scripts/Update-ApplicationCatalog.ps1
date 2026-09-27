@@ -2,18 +2,28 @@
 param(
     [string]$CatalogPath = "$PSScriptRoot\..\apps\applications.json",
     [string]$DownloadRoot = "$PSScriptRoot\..\downloads",
+    [string]$ApplicationId,
     [switch]$Apply
 )
 
 $ErrorActionPreference = 'Stop'
 $catalog = Get-Content -LiteralPath $CatalogPath -Raw | ConvertFrom-Json
+$applications = if ($ApplicationId) {
+    @($catalog.applications | Where-Object id -eq $ApplicationId)
+}
+else {
+    @($catalog.applications)
+}
+if ($ApplicationId -and $applications.Count -eq 0) {
+    throw "Application '$ApplicationId' was not found in '$CatalogPath'."
+}
 New-Item -ItemType Directory -Path $DownloadRoot -Force | Out-Null
 $githubHeaders = @{ 'User-Agent' = 'intune-packaging'; 'Accept' = 'application/vnd.github+json' }
 if (-not [string]::IsNullOrWhiteSpace($env:GITHUB_TOKEN)) {
     $githubHeaders.Authorization = "Bearer $($env:GITHUB_TOKEN)"
 }
 
-foreach ($app in $catalog.applications) {
+foreach ($app in $applications) {
     if ($app.source.type -eq 'github-release') {
         $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$($app.source.repository)/releases/latest" -Headers $githubHeaders
         $asset = $release.assets | Where-Object { $_.name -match $app.source.assetRegex } | Select-Object -First 1
