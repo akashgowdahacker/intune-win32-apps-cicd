@@ -78,17 +78,24 @@ configured per app in the catalog, for example:
 "assignments": [
   {
     "groupId": "00000000-0000-0000-0000-000000000000",
-    "intent": "available"
+    "intent": "available",
+    "notifications": "hideAll"
   }
 ]
 ```
 
 Selecting `deploy` updates and packages the selected catalog entry. If its
 exact-name Win32 app already exists, the deployment reuses it and does not
-replace its package. It creates only missing catalog assignments; an existing
-assignment with conflicting intent/filter is left unchanged and causes a
-clear failure. `available` makes the app available in Company Portal to group
-members; it does not force installation.
+replace its package. It creates missing catalog assignments and updates
+existing direct assignments' notification setting to match the catalog. Since
+the tenant Graph service rejects PATCH of assignment settings, changing that
+setting deletes and recreates only the matching direct, unfiltered group
+assignment, preserving its target, intent, and other settings; the script tries
+to restore the original assignment if recreation fails.
+conflicting intents, exclusions, filters, or policy-set-managed assignments
+are left untouched and cause a clear failure. Notification values are
+`showAll`, `showReboot`, and `hideAll`. `available` makes the app available in
+Company Portal to group members; it does not force installation.
 
 Never commit installer binaries or credentials. Protect the
 `intune-production` environment with required reviewers.

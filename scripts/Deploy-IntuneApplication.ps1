@@ -98,8 +98,33 @@ foreach ($assignment in $app.assignments) {
     if ($assignment.intent -notin @('available', 'required', 'uninstall')) {
         throw "Unsupported assignment intent '$($assignment.intent)' for '$ApplicationId'."
     }
+    if (-not $assignment.notifications) {
+        $assignment.notifications = 'hideAll'
+    }
+    if ($assignment.notifications -notin @('showAll', 'showReboot', 'hideAll')) {
+        throw "Unsupported assignment notification setting '$($assignment.notifications)' for '$ApplicationId'."
+    }
     if ($assignment.groupId -notmatch '^[0-9a-fA-F-]{36}$') {
         throw "Invalid Entra group object ID '$($assignment.groupId)' for '$ApplicationId'."
+    }
+
+    $assignmentBody = @{
+        '@odata.type' = '#microsoft.graph.mobileAppAssignment'
+        intent = $assignment.intent
+        source = 'direct'
+        target = @{
+            '@odata.type' = '#microsoft.graph.groupAssignmentTarget'
+            groupId = $assignment.groupId
+            deviceAndAppManagementAssignmentFilterId = $null
+            deviceAndAppManagementAssignmentFilterType = 'none'
+        }
+        settings = @{
+            '@odata.type' = '#microsoft.graph.win32LobAppAssignmentSettings'
+            notifications = $assignment.notifications
+            restartSettings = $null
+            deliveryOptimizationPriority = 'notConfigured'
+            installTimeSettings = $null
+        }
     }
 
     $assignmentsUri = "https://graph.microsoft.com/beta/deviceAppManagement/mobileApps/$($intuneApp.id)/assignments"
@@ -121,28 +146,70 @@ foreach ($assignment in $app.assignments) {
         if ($targetAssignments[0].target.deviceAndAppManagementAssignmentFilterId) {
             throw "The existing assignment for group '$($assignment.groupId)' has a filter; refusing to treat it as the unfiltered catalog assignment."
         }
-        Write-Host "Assignment already exists: group $($assignment.groupId), intent $($assignment.intent); no change needed."
+        if ($targetAssignments[0].source -eq 'policySets') {
+            throw "The existing assignment for group '$($assignment.groupId)' is managed by a policy set and cannot be updated directly."
+        }
+        if ($targetAssignments[0].settings.notifications -ne $assignment.notifications) {
+            $replacementSettings = $targetAssignments[0].settings |
+                ConvertTo-Json -Depth 20 |
+                ConvertFrom-Json -AsHashtable
+            $replacementSettings.notifications = $assignment.notifications
+            $replacementBody = @{
+                '@odata.type' = '#microsoft.graph.mobileAppAssignment'
+                intent = $targetAssignments[0].intent
+                source = 'direct'
+                target = $targetAssignments[0].target
+                settings = $replacementSettings
+            }
+            $restoreBody = @{
+                '@odata.type' = '#microsoft.graph.mobileAppAssignment'
+                intent = $targetAssignments[0].intent
+                target = $targetAssignments[0].target
+                settings = $targetAssignments[0].settings
+            }
+            Invoke-RestMethod `
+                -Method Delete `
+                -Uri "$assignmentsUri/$($targetAssignments[0].id)" `
+                -Headers $authenticationHeader | Out-Null
+            try {
+                $replacementAssignment = Invoke-RestMethod `
+                    -Method Post `
+                    -Uri $assignmentsUri `
+                    -Headers $authenticationHeader `
+                    -ContentType 'application/json' `
+                    -Body ($replacementBody | ConvertTo-Json -Depth 20)
+                if (-not $replacementAssignment -or
+                    -not $replacementAssignment.id -or
+                    $replacementAssignment.settings.notifications -ne $assignment.notifications) {
+                    throw "Graph did not confirm the replacement assignment with notifications '$($assignment.notifications)'."
+                }
+            }
+            catch {
+                $replacementError = $_
+                try {
+                    $restoredAssignment = Invoke-RestMethod `
+                        -Method Post `
+                        -Uri $assignmentsUri `
+                        -Headers $authenticationHeader `
+                        -ContentType 'application/json' `
+                        -Body ($restoreBody | ConvertTo-Json -Depth 20)
+                    if (-not $restoredAssignment -or -not $restoredAssignment.id) {
+                        throw 'Graph did not confirm restoration of the previous assignment.'
+                    }
+                }
+                catch {
+                    throw "Could not apply notification setting '$($assignment.notifications)' and could not restore the previous assignment. Update error: $($replacementError.Exception.Message). Restore error: $($_.Exception.Message)"
+                }
+                throw "Could not apply notification setting '$($assignment.notifications)'; restored the previous assignment. Update error: $($replacementError.Exception.Message)"
+            }
+            Write-Host "Replaced group $($assignment.groupId) assignment with notifications '$($assignment.notifications)' (assignment ID: $($replacementAssignment.id))."
+        }
+        else {
+            Write-Host "Assignment already matches catalog: group $($assignment.groupId), intent $($assignment.intent), notifications $($assignment.notifications)."
+        }
         continue
     }
 
-    $assignmentBody = @{
-        '@odata.type' = '#microsoft.graph.mobileAppAssignment'
-        intent = $assignment.intent
-        source = 'direct'
-        target = @{
-            '@odata.type' = '#microsoft.graph.groupAssignmentTarget'
-            groupId = $assignment.groupId
-            deviceAndAppManagementAssignmentFilterId = $null
-            deviceAndAppManagementAssignmentFilterType = 'none'
-        }
-        settings = @{
-            '@odata.type' = '#microsoft.graph.win32LobAppAssignmentSettings'
-            notifications = 'showAll'
-            restartSettings = $null
-            deliveryOptimizationPriority = 'notConfigured'
-            installTimeSettings = $null
-        }
-    }
     $createdAssignment = Invoke-RestMethod `
         -Method Post `
         -Uri $assignmentsUri `
@@ -152,5 +219,8 @@ foreach ($assignment in $app.assignments) {
     if (-not $createdAssignment -or -not $createdAssignment.id) {
         throw "Graph did not confirm creation of the '$($assignment.intent)' assignment for group '$($assignment.groupId)'."
     }
-    Write-Host "Created '$($assignment.intent)' assignment for group $($assignment.groupId) on '$($app.displayName)' (assignment ID: $($createdAssignment.id))."
+    if ($createdAssignment.settings.notifications -ne $assignment.notifications) {
+        throw "Assignment was created but Graph returned notification setting '$($createdAssignment.settings.notifications)' instead of '$($assignment.notifications)'."
+    }
+    Write-Host "Created '$($assignment.intent)' assignment for group $($assignment.groupId) on '$($app.displayName)' with notifications '$($assignment.notifications)' (assignment ID: $($createdAssignment.id))."
 }
