@@ -25,7 +25,10 @@ $package = Get-ChildItem -LiteralPath (Join-Path $PackageRoot $ApplicationId) -F
 if (-not $package) { throw "No .intunewin package found for '$ApplicationId' under '$PackageRoot'." }
 
 $moduleVersion = '1.5.0'
-if (-not (Get-Module -ListAvailable -Name IntuneWin32App -RequiredVersion $moduleVersion)) {
+$installedModule = Get-Module -ListAvailable -Name IntuneWin32App |
+    Where-Object Version -eq ([version]$moduleVersion) |
+    Select-Object -First 1
+if (-not $installedModule) {
     Install-Module -Name IntuneWin32App -RequiredVersion $moduleVersion -Repository PSGallery -Scope CurrentUser -Force -AllowClobber
 }
 Import-Module -Name IntuneWin32App -RequiredVersion $moduleVersion -Force
