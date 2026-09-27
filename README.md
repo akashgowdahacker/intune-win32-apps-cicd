@@ -71,10 +71,24 @@ paste credentials into workflow inputs, commit them, or put them in the app
 catalog. Client-secret authentication is used here; GitHub OIDC can be adopted
 later.
 
-Select the application ID in the manual workflow. Selecting `deploy` also
-updates the selected catalog entry and packages that application. It uploads
-the app with its commands, file detection rule, and requirements, but it does
-not assign it to users or devices.
+Select the application ID in the manual workflow. Group assignments are
+configured per app in the catalog, for example:
+
+```json
+"assignments": [
+  {
+    "groupId": "00000000-0000-0000-0000-000000000000",
+    "intent": "available"
+  }
+]
+```
+
+Selecting `deploy` updates and packages the selected catalog entry. If its
+exact-name Win32 app already exists, the deployment reuses it and does not
+replace its package. It creates only missing catalog assignments; an existing
+assignment with conflicting intent/filter is left unchanged and causes a
+clear failure. `available` makes the app available in Company Portal to group
+members; it does not force installation.
 
 Never commit installer binaries or credentials. Protect the
 `intune-production` environment with required reviewers.

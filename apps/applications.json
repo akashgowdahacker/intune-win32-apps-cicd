@@ -51,6 +51,12 @@
       "currentVersion": "26.03",
       "previousVersion": null,
       "availableVersion": "26.03",
+      "assignments": [
+        {
+          "groupId": "70fa4f45-c587-4799-b409-ef4a3ad4a2bf",
+          "intent": "available"
+        }
+      ],
       "package": {
         "setupFile": "7z2603-x64.exe",
         "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
