@@ -87,7 +87,11 @@ configured per app in the catalog, for example:
 Selecting `deploy` updates and packages the selected catalog entry. If its
 exact-name Win32 app already exists, the deployment reuses it and does not
 replace its package. It creates missing catalog assignments and updates
-existing direct assignments' notification setting to match the catalog;
+existing direct assignments' notification setting to match the catalog. Since
+the tenant Graph service rejects PATCH of assignment settings, changing that
+setting deletes and recreates only the matching direct, unfiltered group
+assignment, preserving its target, intent, and other settings; the script tries
+to restore the original assignment if recreation fails.
 conflicting intents, exclusions, filters, or policy-set-managed assignments
 are left untouched and cause a clear failure. Notification values are
 `showAll`, `showReboot`, and `hideAll`. `available` makes the app available in
