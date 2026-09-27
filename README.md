@@ -52,26 +52,32 @@ must specify its silent install/uninstall switches plus a registry, file, or
 product-code detection rule. A version shown in Explorer is not sufficient
 proof that the vendor's silent install works.
 
-## Intune deployment adapter
+## Intune upload-only test
 
-The `deploy` job intentionally stops before Graph upload. Connect it to the
-approved Graph implementation used by your tenant (for example, the referenced
-`Deploy-IntuneApp.ps1` pattern), passing the generated `.intunewin`, commands,
-detection rule, requirements, and version from the catalog. Required
-application permission is normally `DeviceManagementApps.ReadWrite.All`.
-Prefer GitHub OIDC with a federated Entra credential over a client secret.
+The deployment job uses the `IntuneWin32App` PowerShell module to upload a
+catalog application as an Intune Win32 app. It does not create assignments.
+For this initial test it refuses to overwrite an app with the same exact name,
+so it cannot inadvertently change existing app content or assignments.
 
-The adapter should:
+Add these **repository Actions secrets** before selecting `deploy`:
 
-1. Find an existing Win32 app by a stable identifier such as `id`.
-2. Skip upload when the deployed version equals `currentVersion`.
-3. Upload the package and update metadata/detection/requirements.
-4. Preserve the existing app identity and assignments; do not uninstall it or
-   create a second app for an in-place upgrade.
-5. Remove versions older than n-1 only after a successful deployment.
+* `INTUNE_TENANT_ID`
+* `INTUNE_CLIENT_ID`
+* `INTUNE_CLIENT_SECRET`
 
-Never commit installer binaries or credentials. Keep the production
-environment approval enabled before wiring the final deploy step.
+The Entra app registration needs the Microsoft Graph **application**
+permission `DeviceManagementApps.ReadWrite.All` with admin consent. Do not
+paste credentials into workflow inputs, commit them, or put them in the app
+catalog. Client-secret authentication is used here; GitHub OIDC can be adopted
+later.
+
+Select the application ID in the manual workflow. Selecting `deploy` also
+updates the selected catalog entry and packages that application. It uploads
+the app with its commands, file detection rule, and requirements, but it does
+not assign it to users or devices.
+
+Never commit installer binaries or credentials. Protect the
+`intune-production` environment with required reviewers.
 
 ## Included applications
 

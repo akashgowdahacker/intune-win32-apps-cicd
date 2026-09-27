@@ -15,18 +15,18 @@
       },
       "currentVersion": "8.9.8",
       "previousVersion": "8.9.5",
-      "availableVersion": "8.9.8",
+      "availableVersion": "8.9.8.1",
       "package": {
-        "setupFile": "npp.8.9.8.Installer.x64.msi",
-        "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8/npp.8.9.8.Installer.x64.msi",
+        "setupFile": "npp.8.9.8.1.Installer.x64.msi",
+        "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.msi",
         "upgradeBehavior": "in-place",
-        "installCommand": null,
-        "uninstallCommand": null,
+        "installCommand": "msiexec /i npp.8.9.8.Installer.x64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {224C0E17-FB79-4AE2-9A47-5556FCEF39C4} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": null
+          "productCode": "{224C0E17-FB79-4AE2-9A47-5556FCEF39C4}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
@@ -50,10 +50,10 @@
       },
       "currentVersion": "26.03",
       "previousVersion": null,
-      "availableVersion": null,
+      "availableVersion": "26.03",
       "package": {
         "setupFile": "7z2603-x64.exe",
-        "downloadUrl": null,
+        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
         "upgradeBehavior": "in-place",
         "installCommand": "7z2603-x64.exe /S",
         "uninstallCommand": "\"%ProgramFiles%\\7-Zip\\Uninstall.exe\" /S",
@@ -84,20 +84,20 @@
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "versionSource": "installer"
       },
-      "currentVersion": "0.0.0",
-      "previousVersion": null,
-      "availableVersion": null,
+      "currentVersion": "154.0.8037.58",
+      "previousVersion": "0.0.0",
+      "availableVersion": "154.0.8037.58",
       "package": {
         "setupFile": "googlechromestandaloneenterprise64.msi",
-        "downloadUrl": null,
+        "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "upgradeBehavior": "in-place",
-        "installCommand": null,
-        "uninstallCommand": null,
+        "installCommand": "msiexec /i googlechromestandaloneenterprise64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": null
+          "productCode": "{C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
