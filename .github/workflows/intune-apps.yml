@@ -29,6 +29,7 @@ on:
           - all-validated
           - 7zip
           - 7zip-x86
+          - azure-information-protection
           - google-chrome
           - notepadplusplus
           - putty

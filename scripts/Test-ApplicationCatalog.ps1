@@ -62,6 +62,14 @@ foreach ($app in $catalog.applications) {
             throw "$($app.id): active application is missing package.$property."
         }
     }
+    if ($app.package.installScript) {
+        $installScriptName = [IO.Path]::GetFileName($app.package.installScript)
+        if ($installScriptName -ne $app.package.installScript -or
+            -not (Test-Path -LiteralPath (Join-Path $PSScriptRoot $installScriptName) -PathType Leaf) -or
+            $app.package.installCommand -notlike "*-File $installScriptName") {
+            throw "$($app.id): package.installScript must name an existing script used by package.installCommand."
+        }
+    }
     if (-not $app.package.detectionRule) {
         throw "$($app.id): active application is missing package.detectionRule."
     }

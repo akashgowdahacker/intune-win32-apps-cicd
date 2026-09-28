@@ -183,14 +183,40 @@
       "id": "azure-information-protection",
       "displayName": "Azure Information Protection",
       "publisher": "Microsoft",
-      "description": "Azure Information Protection client requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "Microsoft Purview Information Protection client - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "msi",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.microsoft.com/en-us/download/details.aspx?id=53018"
+        "type": "direct-url",
+        "referenceUrl": "https://learn.microsoft.com/en-us/purview/information-protection-client",
+        "downloadUrl": "https://download.microsoft.com/download/5e62f7f5-d616-49f8-b506-f1c6b4f79ba7/PurviewInfoProtection.msi",
+        "fileName": "PurviewInfoProtection.msi",
+        "signerSubject": "Microsoft Corporation",
+        "versionSource": "installer"
       },
-      "pendingReason": "Confirm whether the current Microsoft Purview Information Protection client or a specific legacy AIP client is required."
+      "currentVersion": "3.2.92.0",
+      "previousVersion": null,
+      "availableVersion": "3.2.92.0",
+      "package": {
+        "setupFile": "PurviewInfoProtection.msi",
+        "downloadUrl": "https://download.microsoft.com/download/5e62f7f5-d616-49f8-b506-f1c6b4f79ba7/PurviewInfoProtection.msi",
+        "installScript": "Install-PurviewInfoProtection.ps1",
+        "installCommand": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File Install-PurviewInfoProtection.ps1",
+        "uninstallCommand": "msiexec /x {9442F676-FD30-4E80-A644-9B84CF33A111} /qn /norestart",
+        "upgradeBehavior": "in-place",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{9442F676-FD30-4E80-A644-9B84CF33A111}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      }
     },
     {
       "id": "cdburnerxp",

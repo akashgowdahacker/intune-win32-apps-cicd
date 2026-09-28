@@ -17,6 +17,17 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $source = Join-Path $OutputDirectory 'source'
 $package = Join-Path $OutputDirectory 'package'
 New-Item -ItemType Directory -Path $source,$package -Force | Out-Null
+if ($Application.package.installScript) {
+    $installScriptName = [IO.Path]::GetFileName($Application.package.installScript)
+    if ($installScriptName -ne $Application.package.installScript) {
+        throw "$($Application.id): package.installScript must be a file name."
+    }
+    $installScriptPath = Join-Path $PSScriptRoot $installScriptName
+    if (-not (Test-Path -LiteralPath $installScriptPath -PathType Leaf)) {
+        throw "$($Application.id): install script was not found at '$installScriptPath'."
+    }
+    Copy-Item -LiteralPath $installScriptPath -Destination (Join-Path $source $installScriptName)
+}
 $installer = Join-Path $source $Application.package.setupFile
 $downloadUrl = $Application.package.downloadUrl
 if ($Application.source.type -eq 'winscp-download') {
@@ -52,7 +63,12 @@ if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
 }
 $metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
 if ($Application.installerType -eq 'msi') {
-    $Application.package.installCommand = $metadata.installCommand
+    $Application.package.installCommand = if ($installScriptName) {
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installScriptName"
+    }
+    else {
+        $metadata.installCommand
+    }
     $Application.package.uninstallCommand = $metadata.uninstallCommand
     $Application.package.detectionRule = $metadata.detectionRule
     if (-not $Application.package.upgradeBehavior) {
