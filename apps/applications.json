@@ -16,7 +16,7 @@
       },
       "currentVersion": "8.9.8.1",
       "previousVersion": "8.9.8",
-      "availableVersion": null,
+      "availableVersion": "8.9.8.1",
       "package": {
         "setupFile": "npp.8.9.8.1.Installer.x64.msi",
         "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.msi",
@@ -183,14 +183,40 @@
       "id": "azure-information-protection",
       "displayName": "Azure Information Protection",
       "publisher": "Microsoft",
-      "description": "Azure Information Protection client requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "Microsoft Purview Information Protection client - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "msi",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.microsoft.com/en-us/download/details.aspx?id=53018"
+        "type": "direct-url",
+        "referenceUrl": "https://learn.microsoft.com/en-us/purview/information-protection-client",
+        "downloadUrl": "https://download.microsoft.com/download/5e62f7f5-d616-49f8-b506-f1c6b4f79ba7/PurviewInfoProtection.msi",
+        "fileName": "PurviewInfoProtection.msi",
+        "signerSubject": "Microsoft Corporation",
+        "versionSource": "installer"
       },
-      "pendingReason": "Confirm whether the current Microsoft Purview Information Protection client or a specific legacy AIP client is required."
+      "currentVersion": "3.2.92.0",
+      "previousVersion": null,
+      "availableVersion": "3.2.92.0",
+      "package": {
+        "setupFile": "PurviewInfoProtection.msi",
+        "downloadUrl": "https://download.microsoft.com/download/5e62f7f5-d616-49f8-b506-f1c6b4f79ba7/PurviewInfoProtection.msi",
+        "installScript": "Install-PurviewInfoProtection.ps1",
+        "installCommand": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File Install-PurviewInfoProtection.ps1",
+        "uninstallCommand": "msiexec /x {9442F676-FD30-4E80-A644-9B84CF33A111} /qn /norestart",
+        "upgradeBehavior": "in-place",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{9442F676-FD30-4E80-A644-9B84CF33A111}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      }
     },
     {
       "id": "cdburnerxp",
@@ -248,14 +274,39 @@
       "id": "mozilla-firefox",
       "displayName": "Mozilla Firefox",
       "publisher": "Mozilla",
-      "description": "Mozilla Firefox requested for Intune deployment",
+      "description": "Mozilla Firefox x64 MSI candidate; installer behavior needs validation",
       "status": "pending-validation",
+      "installerType": "msi",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.mozilla.org/en-US/firefox/releases/"
+        "type": "direct-url",
+        "referenceUrl": "https://www.mozilla.org/en-US/firefox/enterprise/",
+        "downloadUrl": "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=en-US",
+        "fileName": "Firefox-latest-x64.msi",
+        "versionSource": "installer"
       },
-      "pendingReason": "Select the required Firefox release/channel and verify the vendor MSI URL, version, and detection metadata."
+      "currentVersion": "156.0.1.0",
+      "previousVersion": null,
+      "availableVersion": "156.0.1.0",
+      "package": {
+        "setupFile": "Firefox-latest-x64.msi",
+        "downloadUrl": "https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=en-US",
+        "upgradeBehavior": "in-place",
+        "installCommand": "msiexec /i Firefox-latest-x64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {1294A4C5-9977-480F-9497-C0EA1E630130} /qn /norestart",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{1294A4C5-9977-480F-9497-C0EA1E630130}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      },
+      "pendingReason": "The official MSI installed with exit code 0 on the GitHub Windows runner, but Windows Installer reported the configured ProductCode as unknown and msiexec /x returned 1605. Verify correct product detection and unattended removal before packaging or upload."
     },
     {
       "id": "freemind",
@@ -378,14 +429,42 @@
       "id": "media-player",
       "displayName": "VLC media player",
       "publisher": "VideoLAN",
-      "description": "VLC media player requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "VLC media player 3.0.24 x64 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "exe",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "http://www.videolan.org/vlc/download-windows.html"
+        "type": "direct-url",
+        "referenceUrl": "https://www.videolan.org/vlc/download-windows.html",
+        "downloadUrl": "https://mirror.bom2.albony.in/videolan-ftp/vlc/3.0.24/win64/vlc-3.0.24-win64.exe",
+        "fileName": "vlc-3.0.24-win64.exe",
+        "versionRegex": "^vlc-(?<version>[0-9.]+)-win64\\.exe$",
+        "sha256": "D711E1E1FE52052748C39080C7DCE63F6B7E4C315EFEDF1774A3F1957B782FF3",
+        "signerSubject": "VideoLAN"
       },
-      "pendingReason": "Verify the official Windows installer, architecture, silent switches, and detection rule."
+      "currentVersion": "3.0.24",
+      "previousVersion": null,
+      "availableVersion": "3.0.24",
+      "package": {
+        "setupFile": "vlc-3.0.24-win64.exe",
+        "downloadUrl": "https://mirror.bom2.albony.in/videolan-ftp/vlc/3.0.24/win64/vlc-3.0.24-win64.exe",
+        "installCommand": "vlc-3.0.24-win64.exe /L=1033 /S",
+        "uninstallCommand": "\"%ProgramFiles%\\VideoLAN\\VLC\\uninstall.exe\" /S",
+        "upgradeBehavior": "in-place",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "file",
+          "path": "C:\\Program Files\\VideoLAN\\VLC",
+          "fileOrFolderName": "vlc.exe",
+          "detectionMethod": "exists"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 300
+        }
+      }
     },
     {
       "id": "openssl",
@@ -404,14 +483,38 @@
       "id": "putty",
       "displayName": "PuTTY",
       "publisher": "Simon Tatham",
-      "description": "PuTTY requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "PuTTY 0.85 x64 MSI - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "msi",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html"
+        "type": "direct-url",
+        "referenceUrl": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html",
+        "downloadUrl": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-installer.msi",
+        "signerSubject": "Simon Tatham",
+        "versionSource": "installer"
       },
-      "pendingReason": "Verify the current official installer, architecture, unattended switches, and detection rule."
+      "currentVersion": "0.85.0.0",
+      "previousVersion": null,
+      "availableVersion": "0.85.0.0",
+      "package": {
+        "setupFile": "putty-64bit-installer.msi",
+        "downloadUrl": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-installer.msi",
+        "upgradeBehavior": "in-place",
+        "installCommand": "msiexec /i putty-64bit-installer.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {3B0346D3-155D-43E5-9561-B9BE51CF2EB6} /qn /norestart",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{3B0346D3-155D-43E5-9561-B9BE51CF2EB6}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 100
+        }
+      }
     },
     {
       "id": "tera-term",
@@ -507,15 +610,42 @@
     {
       "id": "winscp",
       "displayName": "WinSCP",
-      "publisher": "WinSCP",
-      "description": "WinSCP requested for Intune deployment",
-      "status": "pending-validation",
-      "architecture": "x64",
+      "publisher": "Martin Prikryl",
+      "description": "WinSCP 6.5.7 x86 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "exe",
+      "architecture": "x86",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://winscp.net/eng/download.php"
+        "type": "winscp-download",
+        "referenceUrl": "https://winscp.net/eng/docs/installation",
+        "downloadPageUrl": "https://winscp.net/download/WinSCP-6.5.7-Setup.exe/download",
+        "fileName": "WinSCP-6.5.7-Setup.exe",
+        "versionRegex": "^WinSCP-(?<version>[0-9.]+)-Setup\\.exe$",
+        "sha256": "65103DAD94A907BF8B7B9B8DB8174DFB60010237D9125DB066F34D89817BCD99",
+        "signerSubject": "Martin"
       },
-      "pendingReason": "Choose the official MSI or EXE installer and validate its commands and detection in the target environment."
+      "currentVersion": "6.5.7",
+      "previousVersion": null,
+      "availableVersion": "6.5.7",
+      "package": {
+        "setupFile": "WinSCP-6.5.7-Setup.exe",
+        "downloadUrl": "https://winscp.net/download/WinSCP-6.5.7-Setup.exe/download",
+        "installCommand": "WinSCP-6.5.7-Setup.exe /VERYSILENT /ALLUSERS /NORESTART",
+        "uninstallCommand": "\"%ProgramFiles(x86)%\\WinSCP\\unins000.exe\" /VERYSILENT /NORESTART",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "file",
+          "path": "C:\\Program Files (x86)\\WinSCP",
+          "fileOrFolderName": "WinSCP.exe",
+          "detectionMethod": "exists"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 500
+        }
+      }
     },
     {
       "id": "winzip",

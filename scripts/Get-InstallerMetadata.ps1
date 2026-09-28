@@ -37,9 +37,14 @@ if ($InstallerType -eq 'msi') {
 }
 
 $file = Get-Item -LiteralPath $InstallerPath
-$version = $file.VersionInfo.ProductVersion
+$version = if (-not [string]::IsNullOrWhiteSpace($file.VersionInfo.ProductVersion)) {
+    $file.VersionInfo.ProductVersion
+}
+else {
+    $file.VersionInfo.FileVersion
+}
 if ([string]::IsNullOrWhiteSpace($version)) {
-    throw "The EXE has no ProductVersion resource. Add install/uninstall commands and an explicit detection rule to the catalog."
+    throw "The EXE has no ProductVersion or FileVersion resource. Add install/uninstall commands and an explicit detection rule to the catalog."
 }
 $metadata = [pscustomobject]@{
     version = $version

@@ -18,7 +18,7 @@ if ($duplicateIds.Count -gt 0) {
     throw "Duplicate application IDs: $(($duplicateIds.Name) -join ', ')."
 }
 
-$supportedSourceTypes = @('github-release', 'direct-url')
+$supportedSourceTypes = @('github-release', 'direct-url', 'winscp-download')
 foreach ($app in $catalog.applications) {
     if ([string]::IsNullOrWhiteSpace($app.id) -or
         [string]::IsNullOrWhiteSpace($app.displayName) -or
@@ -42,6 +42,16 @@ foreach ($app in $catalog.applications) {
     if ($app.source.type -notin $supportedSourceTypes) {
         throw "$($app.id): unsupported package source '$($app.source.type)'."
     }
+    if ($app.source.sha256 -and $app.source.sha256 -notmatch '^[0-9a-fA-F]{64}$') {
+        throw "$($app.id): source.sha256 must contain exactly 64 hexadecimal characters."
+    }
+    if ($app.source.type -eq 'winscp-download' -and
+        ([string]::IsNullOrWhiteSpace($app.source.downloadPageUrl) -or
+            [string]::IsNullOrWhiteSpace($app.source.fileName) -or
+            [string]::IsNullOrWhiteSpace($app.source.signerSubject) -or
+            [string]::IsNullOrWhiteSpace($app.source.sha256))) {
+        throw "$($app.id): winscp-download requires downloadPageUrl, fileName, signerSubject, and sha256."
+    }
     foreach ($property in 'installerType', 'architecture', 'currentVersion') {
         if ([string]::IsNullOrWhiteSpace([string]$app.$property)) {
             throw "$($app.id): active application is missing '$property'."
@@ -50,6 +60,14 @@ foreach ($app in $catalog.applications) {
     foreach ($property in 'setupFile', 'downloadUrl', 'installCommand', 'uninstallCommand') {
         if ([string]::IsNullOrWhiteSpace($app.package.$property)) {
             throw "$($app.id): active application is missing package.$property."
+        }
+    }
+    if ($app.package.installScript) {
+        $installScriptName = [IO.Path]::GetFileName($app.package.installScript)
+        if ($installScriptName -ne $app.package.installScript -or
+            -not (Test-Path -LiteralPath (Join-Path $PSScriptRoot $installScriptName) -PathType Leaf) -or
+            $app.package.installCommand -notlike "*-File $installScriptName") {
+            throw "$($app.id): package.installScript must name an existing script used by package.installCommand."
         }
     }
     if (-not $app.package.detectionRule) {
@@ -100,6 +118,9 @@ foreach ($scriptPath in Get-ChildItem -LiteralPath "$PSScriptRoot" -Filter '*.ps
     if ($parseErrors.Count -gt 0) {
         throw "$($scriptPath.Name): $($parseErrors[0].Message)"
     }
+}
+if ($workflow -notmatch '(?m)^\s+\.\s*\\scripts\\Test-IntuneInstaller\.ps1\s+-Application\s+\$app') {
+    throw 'The Intune packaging job must smoke-test each installer before deployment.'
 }
 
 $pendingApp = $catalog.applications |

@@ -102,17 +102,19 @@ Never commit installer binaries or credentials. Protect the
 
 ## Application status
 
-The catalog contains four currently packageable applications: Notepad++,
-7-Zip x86 and x64, and Google Chrome Enterprise x64. The other requested
-applications are recorded with `status: "pending-validation"` and official
-vendor reference or supplied reference links where available. A `source.referenceUrl` is
-informational only; it is not used as an installer download URL. Some supplied
-links are third-party downloads and are flagged in the corresponding
-`pendingReason`. Staged applications are deliberately excluded from catalog
-updates and cannot be packaged or deployed until their vendor installer URL,
-silent commands, architecture, and detection rule have been verified. Apps
-requiring licensed, legacy, or organization-specific installers also need their
-package source confirmed before activation.
+The catalog contains eight currently packageable applications: Notepad++,
+7-Zip x86 and x64, Google Chrome Enterprise x64, Microsoft Purview Information
+Protection 3.2.92.0, PuTTY 0.85 x64, VLC 3.0.24 x64, and WinSCP 6.5.7. The
+other requested applications are recorded with
+`status: "pending-validation"` and official vendor reference or supplied
+reference links where available. A
+`source.referenceUrl` is informational only; it is not used as an installer
+download URL. Some supplied links are third-party downloads and are flagged in
+the corresponding `pendingReason`. Staged applications are deliberately
+excluded from catalog updates and cannot be packaged or deployed until their
+vendor installer URL, silent commands, architecture, and detection rule have
+been verified. Apps requiring licensed, legacy, or organization-specific
+installers also need their package source confirmed before activation.
 
 The workflow's application selector lists only packageable applications. To
 activate a staged entry, verify its installer and deployment behavior, then
@@ -121,6 +123,13 @@ For a manual run, select `all-validated` to check, package, or deploy every
 catalog entry that is not pending validation. The deployment job applies only
 assignments explicitly configured on each app; apps with no assignments are
 uploaded without being assigned to a group.
+Before upload, the packaging job runs each catalog install command on its
+disposable Windows runner, confirms the configured MSI/file detection rule,
+uninstalls the app, and confirms removal. A failed install, detection, or
+uninstall blocks the deployment job. If the runner image already contains the
+app, the test skips it rather than modifying that pre-existing installation.
+This is a smoke test on GitHub's Windows image, not a substitute for validating
+behavior on managed endpoint models.
 
 The separate **Catalog validation** workflow runs on changes to the catalog,
 scripts, or workflows. It checks catalog fields and unique IDs, confirms the
@@ -131,4 +140,13 @@ It does not download installers, package apps, or require Intune credentials.
 Notepad++ and both 7-Zip architectures are discovered from GitHub release
 assets. Chrome uses Google's stable Enterprise MSI URL and reads its version
 and MSI product code from the downloaded installer because the URL does not
-contain a version.
+contain a version. WinSCP's official page supplies a time-limited CDN download
+link; the packager resolves it at package time and verifies the vendor-published
+SHA-256 and code-signing certificate before smoke testing the installer.
+VLC's official download page provides the selected mirror, publisher checksum,
+and signer; the package verifies both checksum and Authenticode signature.
+The Purview client wrapper sets Microsoft's documented
+`AllowMajorVersionUpgrade` registry value before silent MSI installation so
+non-interactive upgrades from the legacy AIP client can proceed. Microsoft
+documents that this upgrade removes the legacy AIP Office add-in; validate that
+change with a pilot group before assigning the app broadly.

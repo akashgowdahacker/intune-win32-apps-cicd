@@ -17,16 +17,65 @@ New-Item -ItemType Directory -Path $OutputDirectory -Force | Out-Null
 $source = Join-Path $OutputDirectory 'source'
 $package = Join-Path $OutputDirectory 'package'
 New-Item -ItemType Directory -Path $source,$package -Force | Out-Null
-$installer = Join-Path $source $Application.package.setupFile
-Invoke-WebRequest -Uri $Application.package.downloadUrl -OutFile $installer
-
-$metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType $Application.installerType
-if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
-    throw "Installer metadata extraction returned no output for '$installer'."
+if ($Application.package.installScript) {
+    $installScriptName = [IO.Path]::GetFileName($Application.package.installScript)
+    if ($installScriptName -ne $Application.package.installScript) {
+        throw "$($Application.id): package.installScript must be a file name."
+    }
+    $installScriptPath = Join-Path $PSScriptRoot $installScriptName
+    if (-not (Test-Path -LiteralPath $installScriptPath -PathType Leaf)) {
+        throw "$($Application.id): install script was not found at '$installScriptPath'."
+    }
+    Copy-Item -LiteralPath $installScriptPath -Destination (Join-Path $source $installScriptName)
 }
-$metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
+$installer = Join-Path $source $Application.package.setupFile
+$downloadUrl = $Application.package.downloadUrl
+if ($Application.source.type -eq 'winscp-download') {
+    $downloadPage = Invoke-WebRequest -Uri $Application.source.downloadPageUrl -UseBasicParsing
+    $fileNamePattern = [regex]::Escape($Application.package.setupFile)
+    $downloadMatch = [regex]::Match(
+        $downloadPage.Content,
+        "href=[""'](?<url>https://cdn\.winscp\.net/files/$fileNamePattern\?secure=[^""']+)[""']"
+    )
+    if (-not $downloadMatch.Success) {
+        throw "$($Application.id): vendor download page did not provide a signed CDN URL for '$($Application.package.setupFile)'."
+    }
+    $downloadUrl = [Net.WebUtility]::HtmlDecode($downloadMatch.Groups['url'].Value)
+}
+Invoke-WebRequest -Uri $downloadUrl -OutFile $installer -UseBasicParsing
+if ($Application.source.sha256) {
+    $actualHash = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash
+    if ($actualHash -ine $Application.source.sha256) {
+        throw "$($Application.id): installer SHA-256 '$actualHash' did not match the catalog value."
+    }
+}
+if ($Application.source.signerSubject) {
+    $signature = Get-AuthenticodeSignature -FilePath $installer
+    if ($signature.Status -ne 'Valid' -or
+        $signature.SignerCertificate.Subject -notlike "*$($Application.source.signerSubject)*") {
+        throw "$($Application.id): installer signature is invalid or is not signed by '$($Application.source.signerSubject)'."
+    }
+}
+
+$metadata = [pscustomobject]@{
+    version = $Application.currentVersion
+    productCode = $null
+    installCommand = $Application.package.installCommand
+    uninstallCommand = $Application.package.uninstallCommand
+    detectionRule = $Application.package.detectionRule
+}
 if ($Application.installerType -eq 'msi') {
-    $Application.package.installCommand = $metadata.installCommand
+    $metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType msi
+    if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
+        throw "Installer metadata extraction returned no output for '$installer'."
+    }
+    $metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
+    $Application.package.installCommand = if ($installScriptName) {
+        "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installScriptName"
+    }
+    else {
+        $metadata.installCommand
+    }
     $Application.package.uninstallCommand = $metadata.uninstallCommand
     $Application.package.detectionRule = $metadata.detectionRule
     if (-not $Application.package.upgradeBehavior) {
@@ -34,7 +83,7 @@ if ($Application.installerType -eq 'msi') {
     }
 }
 if (-not (Test-Path -LiteralPath $ToolPath)) {
-    Invoke-WebRequest -Uri 'https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe' -OutFile $ToolPath
+    Invoke-WebRequest -Uri 'https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe' -OutFile $ToolPath -UseBasicParsing
 }
 & $ToolPath -c $source -s $Application.package.setupFile -o $package -q
 if ($LASTEXITCODE -ne 0) { throw "IntuneWinAppUtil failed with exit code $LASTEXITCODE." }
