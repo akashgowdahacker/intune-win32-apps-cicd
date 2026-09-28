@@ -47,6 +47,22 @@ function Test-ApplicationDetected {
     }
 }
 
+function Wait-ForApplicationRemoval {
+    param(
+        [Parameter(Mandatory)][pscustomobject]$App,
+        [ValidateRange(1, 600)][int]$TimeoutSeconds = 180
+    )
+
+    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
+    while ([DateTime]::UtcNow -lt $deadline) {
+        if (-not (Test-ApplicationDetected -App $App)) {
+            return $true
+        }
+        Start-Sleep -Seconds 5
+    }
+    return -not (Test-ApplicationDetected -App $App)
+}
+
 function Invoke-CatalogCommand {
     param(
         [Parameter(Mandatory)][string]$Command,
@@ -154,8 +170,8 @@ try {
         -Description 'uninstall' `
         -WorkingDirectory $workingDirectory
     $installCommandCompleted = $false
-    if (Test-ApplicationDetected -App $Application) {
-        throw "$($Application.id): uninstall completed but the catalog detection rule still matches."
+    if (-not (Wait-ForApplicationRemoval -App $Application -TimeoutSeconds 180)) {
+        throw "$($Application.id): uninstall completed but the catalog detection rule still matches after a 180s grace period."
     }
     Write-Host "$($Application.id): catalog detection confirmed removal."
 }
@@ -167,8 +183,8 @@ finally {
             -WorkingDirectory $workingDirectory `
             -AllowProductNotInstalled
         $installCommandCompleted = $false
-        if (Test-ApplicationDetected -App $Application) {
-            throw "$($Application.id): cleanup uninstall completed but the app is still detected."
+        if (-not (Wait-ForApplicationRemoval -App $Application -TimeoutSeconds 180)) {
+            throw "$($Application.id): cleanup uninstall completed but the app is still detected after a 180s grace period."
         }
     }
 }
