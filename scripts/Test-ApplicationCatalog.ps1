@@ -101,6 +101,9 @@ foreach ($scriptPath in Get-ChildItem -LiteralPath "$PSScriptRoot" -Filter '*.ps
         throw "$($scriptPath.Name): $($parseErrors[0].Message)"
     }
 }
+if ($workflow -notmatch '(?m)^\s+\.\s*\\scripts\\Test-IntuneInstaller\.ps1\s+-Application\s+\$app') {
+    throw 'The Intune packaging job must smoke-test each installer before deployment.'
+}
 
 $pendingApp = $catalog.applications |
     Where-Object status -eq 'pending-validation' |

@@ -42,7 +42,16 @@ foreach ($app in $applications) {
     }
     elseif ($app.source.type -eq 'direct-url') {
         $downloadUrl = $app.source.downloadUrl
-        $assetName = [IO.Path]::GetFileName(([Uri]$downloadUrl).AbsolutePath)
+        $assetName = if ($app.source.fileName) {
+            $app.source.fileName
+        }
+        else {
+            [IO.Path]::GetFileName(([Uri]$downloadUrl).AbsolutePath)
+        }
+        if ([string]::IsNullOrWhiteSpace($assetName) -or
+            [IO.Path]::GetFileName($assetName) -ne $assetName) {
+            throw "$($app.id): direct-url source needs a valid fileName when its URL has no installer filename."
+        }
     }
     else {
         throw "$($app.id): unsupported source type '$($app.source.type)'. Use github-release or direct-url."

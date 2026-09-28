@@ -102,8 +102,8 @@ Never commit installer binaries or credentials. Protect the
 
 ## Application status
 
-The catalog contains four currently packageable applications: Notepad++,
-7-Zip x86 and x64, and Google Chrome Enterprise x64. The other requested
+The catalog contains five currently packageable applications: Notepad++,
+7-Zip x86 and x64, Google Chrome Enterprise x64, and Firefox x64 MSI. The other requested
 applications are recorded with `status: "pending-validation"` and official
 vendor reference or supplied reference links where available. A `source.referenceUrl` is
 informational only; it is not used as an installer download URL. Some supplied
@@ -121,6 +121,11 @@ For a manual run, select `all-validated` to check, package, or deploy every
 catalog entry that is not pending validation. The deployment job applies only
 assignments explicitly configured on each app; apps with no assignments are
 uploaded without being assigned to a group.
+Before upload, the packaging job also runs each catalog install command on its
+disposable Windows runner, confirms the configured MSI/file detection rule,
+uninstalls the app, and confirms removal. A failed install, detection, or
+uninstall blocks the deployment job. This is a smoke test on GitHub's Windows
+image, not a substitute for validating behavior on managed endpoint models.
 
 The separate **Catalog validation** workflow runs on changes to the catalog,
 scripts, or workflows. It checks catalog fields and unique IDs, confirms the

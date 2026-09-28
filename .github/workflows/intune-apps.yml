@@ -30,6 +30,7 @@ on:
           - 7zip
           - 7zip-x86
           - google-chrome
+          - mozilla-firefox
           - notepadplusplus
 
 permissions:
@@ -100,7 +101,9 @@ jobs:
           }
           if ($apps.Count -eq 0) { throw "No packageable application found for '$env:APPLICATION_ID'." }
           foreach ($app in $apps) {
-            .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
+            $outputDirectory = ".\artifacts\$($app.id)"
+            .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory $outputDirectory
+            .\scripts\Test-IntuneInstaller.ps1 -Application $app -InstallerPath (Join-Path $outputDirectory "source\$($app.package.setupFile)")
           }
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
