@@ -23,6 +23,13 @@ function Test-ApplicationDetected {
             try {
                 $productState = $windowsInstaller.ProductState($productCode)
                 Write-Host "$($App.id): Windows Installer ProductState for $productCode is $productState."
+                $registrationPaths = @(
+                    "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$productCode",
+                    "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\$productCode",
+                    "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$productCode"
+                )
+                $registeredPaths = @($registrationPaths | Where-Object { Test-Path -LiteralPath $_ })
+                Write-Host "$($App.id): MSI uninstall registrations: $($registeredPaths -join ', ')."
                 return $productState -eq 5
             }
             finally {
@@ -44,7 +51,8 @@ function Invoke-CatalogCommand {
     param(
         [Parameter(Mandatory)][string]$Command,
         [Parameter(Mandatory)][string]$Description,
-        [Parameter(Mandatory)][string]$WorkingDirectory
+        [Parameter(Mandatory)][string]$WorkingDirectory,
+        [switch]$AllowProductNotInstalled
     )
 
     $expandedCommand = [Environment]::ExpandEnvironmentVariables($Command)
@@ -72,9 +80,16 @@ function Invoke-CatalogCommand {
         throw "$($Application.id): $Description executable was not found: '$executable'."
     }
 
+    $arguments = [Environment]::ExpandEnvironmentVariables($commandMatch.Groups['arguments'].Value)
+    $logPath = $null
+    if ([IO.Path]::GetFileName($executable) -match '^msiexec(\.exe)?$') {
+        $logPath = Join-Path ([IO.Path]::GetTempPath()) "$($Application.id)-$([guid]::NewGuid().ToString('N')).log"
+        $arguments = "$arguments /l*v `"$logPath`""
+    }
+    Write-Host "$($Application.id): running $Description using '$executable' with arguments '$arguments'."
     $process = Start-Process `
         -FilePath $executable `
-        -ArgumentList $commandMatch.Groups['arguments'].Value `
+        -ArgumentList $arguments `
         -WorkingDirectory $WorkingDirectory `
         -PassThru
     if (-not $process.WaitForExit($TimeoutSeconds * 1000)) {
@@ -82,10 +97,26 @@ function Invoke-CatalogCommand {
         throw "$($Application.id): $Description exceeded the $TimeoutSeconds second timeout."
     }
     $process.Refresh()
-    if ($process.ExitCode -notin @(0, 3010)) {
+    if ($process.ExitCode -notin @(0, 3010) -and
+        -not ($AllowProductNotInstalled -and $process.ExitCode -eq 1605)) {
+        if ($logPath -and (Test-Path -LiteralPath $logPath)) {
+            Get-Content -LiteralPath $logPath -Tail 30 | ForEach-Object { Write-Host $_ }
+        }
         throw "$($Application.id): $Description exited with code $($process.ExitCode)."
     }
     Write-Host "$($Application.id): $Description completed with exit code $($process.ExitCode)."
+    if ($process.ExitCode -eq 1605) {
+        Write-Host "$($Application.id): Windows Installer reports the product was not installed."
+    }
+    if ($logPath -and (Test-Path -LiteralPath $logPath)) {
+        $completion = Get-Content -LiteralPath $logPath |
+            Where-Object { $_ -match 'Product: .+ -- Installation (completed successfully|failed)\.' } |
+            Select-Object -Last 1
+        if ($completion) {
+            Write-Host "$($Application.id): $completion"
+        }
+        Remove-Item -LiteralPath $logPath -Force
+    }
 }
 
 if ([string]::IsNullOrWhiteSpace($Application.package.installCommand) -or
@@ -117,7 +148,8 @@ try {
         Invoke-CatalogCommand `
             -Command $Application.package.uninstallCommand `
             -Description 'cleanup after undetected install' `
-            -WorkingDirectory $workingDirectory
+            -WorkingDirectory $workingDirectory `
+            -AllowProductNotInstalled
         $installCommandCompleted = $false
         throw "$($Application.id): install completed but the catalog detection rule did not match."
     }
@@ -138,7 +170,8 @@ finally {
         Invoke-CatalogCommand `
             -Command $Application.package.uninstallCommand `
             -Description 'cleanup uninstall' `
-            -WorkingDirectory $workingDirectory
+            -WorkingDirectory $workingDirectory `
+            -AllowProductNotInstalled
         $installCommandCompleted = $false
         if (Test-ApplicationDetected -App $Application) {
             throw "$($Application.id): cleanup uninstall completed but the app is still detected."
