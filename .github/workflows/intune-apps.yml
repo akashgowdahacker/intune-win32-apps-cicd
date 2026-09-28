@@ -28,6 +28,7 @@ on:
         options:
           - all-validated
           - 7zip
+          - 7zip-x86
           - google-chrome
           - notepadplusplus
 

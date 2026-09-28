@@ -120,14 +120,38 @@
       "id": "7zip-x86",
       "displayName": "7-Zip x86",
       "publisher": "Igor Pavlov",
-      "description": "7-Zip x86 requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "7-Zip x86 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "msi",
       "architecture": "x86",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.7-zip.org/download.html"
+        "type": "github-release",
+        "referenceUrl": "https://www.7-zip.org/download.html",
+        "repository": "ip7z/7zip",
+        "assetRegex": "^7z(?<major>[0-9]{2})(?<minor>[0-9]{2})\\.msi$",
+        "versionFormat": "{0}.{1}"
       },
-      "pendingReason": "Select and verify the vendor's x86 installer, silent install/uninstall commands, and architecture-specific detection rule."
+      "currentVersion": "26.03",
+      "previousVersion": null,
+      "availableVersion": "26.03",
+      "package": {
+        "setupFile": "7z2603.msi",
+        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603.msi",
+        "upgradeBehavior": "in-place",
+        "installCommand": "msiexec /i 7z2603.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {23170F69-40C1-2701-2603-000001000000} /qn /norestart",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{23170F69-40C1-2701-2603-000001000000}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x86",
+          "minimumDiskSpaceInMB": 100
+        }
+      }
     },
     {
       "id": "acrobat-pro-dc-2026",

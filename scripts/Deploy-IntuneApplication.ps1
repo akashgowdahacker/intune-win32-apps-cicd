@@ -58,14 +58,25 @@ if ($matchingApps.Count -eq 1) {
     Write-Host "Reusing existing Intune Win32 app '$($app.displayName)' (ID: $($intuneApp.id)); package content will not be changed."
 }
 else {
-    if ($app.package.detectionRule.type -ne 'file') {
-        throw "Detection rule type '$($app.package.detectionRule.type)' is not yet supported by the deployment adapter."
+    $detectionRule = switch ($app.package.detectionRule.type) {
+        'file' {
+            New-IntuneWin32AppDetectionRuleFile `
+                -Existence `
+                -Path $app.package.detectionRule.path `
+                -FileOrFolder $app.package.detectionRule.fileOrFolderName `
+                -DetectionType $app.package.detectionRule.detectionMethod
+        }
+        'msi' {
+            if ([string]::IsNullOrWhiteSpace($app.package.detectionRule.productCode)) {
+                throw "$ApplicationId has an MSI detection rule without a product code."
+            }
+            New-IntuneWin32AppDetectionRuleMSI `
+                -ProductCode $app.package.detectionRule.productCode
+        }
+        default {
+            throw "Detection rule type '$($app.package.detectionRule.type)' is not supported by the deployment adapter."
+        }
     }
-    $detectionRule = New-IntuneWin32AppDetectionRuleFile `
-        -Existence `
-        -Path $app.package.detectionRule.path `
-        -FileOrFolder $app.package.detectionRule.fileOrFolderName `
-        -DetectionType $app.package.detectionRule.detectionMethod
 
     $osRelease = switch ($app.package.requirements.minimumOS) {
         'W10-21H2' { 'W10_21H2' }

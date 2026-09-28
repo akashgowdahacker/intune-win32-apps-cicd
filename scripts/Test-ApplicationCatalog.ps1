@@ -55,6 +55,13 @@ foreach ($app in $catalog.applications) {
     if (-not $app.package.detectionRule) {
         throw "$($app.id): active application is missing package.detectionRule."
     }
+    if ($app.package.detectionRule.type -eq 'msi' -and
+        [string]::IsNullOrWhiteSpace($app.package.detectionRule.productCode)) {
+        throw "$($app.id): MSI detection requires a productCode."
+    }
+    if ($app.package.detectionRule.type -notin @('file', 'msi')) {
+        throw "$($app.id): unsupported detection rule type '$($app.package.detectionRule.type)'."
+    }
 }
 
 $workflow = Get-Content -LiteralPath $WorkflowPath -Raw

@@ -102,10 +102,10 @@ Never commit installer binaries or credentials. Protect the
 
 ## Application status
 
-The catalog contains three currently packageable applications: Notepad++,
-7-Zip x64, and Google Chrome Enterprise x64. The other requested applications
-are recorded with `status: "pending-validation"` and official vendor reference
-or supplied reference links where available. A `source.referenceUrl` is
+The catalog contains four currently packageable applications: Notepad++,
+7-Zip x86 and x64, and Google Chrome Enterprise x64. The other requested
+applications are recorded with `status: "pending-validation"` and official
+vendor reference or supplied reference links where available. A `source.referenceUrl` is
 informational only; it is not used as an installer download URL. Some supplied
 links are third-party downloads and are flagged in the corresponding
 `pendingReason`. Staged applications are deliberately excluded from catalog
@@ -128,6 +128,7 @@ Intune selector matches packageable entries, parses all PowerShell scripts, and
 smoke-tests that pending apps are rejected before download or deployment.
 It does not download installers, package apps, or require Intune credentials.
 
-Notepad++ and 7-Zip x64 are discovered from GitHub release assets. Chrome uses
-Google's stable Enterprise MSI URL and reads its version and MSI product code
-from the downloaded installer because the URL does not contain a version.
+Notepad++ and both 7-Zip architectures are discovered from GitHub release
+assets. Chrome uses Google's stable Enterprise MSI URL and reads its version
+and MSI product code from the downloaded installer because the URL does not
+contain a version.
