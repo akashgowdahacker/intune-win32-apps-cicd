@@ -165,6 +165,21 @@ try {
     }
     Write-Host "$($Application.id): catalog detection confirmed the installation."
 
+    Write-Host "$($Application.id): running upgrade validation by reinstalling the same package silently."
+    Invoke-CatalogCommand `
+        -Command $Application.package.installCommand `
+        -Description 'upgrade validation' `
+        -WorkingDirectory $workingDirectory
+    if (-not (Test-ApplicationDetected -App $Application)) {
+        Invoke-CatalogCommand `
+            -Command $Application.package.uninstallCommand `
+            -Description 'cleanup after undetected upgrade validation' `
+            -WorkingDirectory $workingDirectory `
+            -AllowProductNotInstalled
+        throw "$($Application.id): upgrade validation completed but the catalog detection rule did not match after the reinstall."
+    }
+    Write-Host "$($Application.id): upgrade validation confirmed the app remains detected after a no-prompt reinstall."
+
     Invoke-CatalogCommand `
         -Command $Application.package.uninstallCommand `
         -Description 'uninstall' `
