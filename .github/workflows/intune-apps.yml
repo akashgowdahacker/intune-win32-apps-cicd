@@ -1,0 +1,123 @@
+name: Intune application lifecycle
+
+on:
+  schedule:
+    - cron: '15 3,15 * * *'
+  workflow_dispatch:
+    inputs:
+      update_catalog:
+        description: Check vendors and update catalog versions
+        required: true
+        default: false
+        type: boolean
+      package:
+        description: Download installers and build .intunewin packages
+        required: true
+        default: true
+        type: boolean
+      deploy:
+        description: Deploy generated packages to Intune
+        required: true
+        default: false
+        type: boolean
+      application_id:
+        description: Application from the catalog
+        required: true
+        type: choice
+        default: 7zip
+        options:
+          - 7zip
+          - google-chrome
+          - notepadplusplus
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    if: github.event_name == 'schedule' || inputs.update_catalog || inputs.package || inputs.deploy
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check vendor releases
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          APPLICATION_ID: ${{ inputs.application_id }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:APPLICATION_ID)) {
+            .\scripts\Update-ApplicationCatalog.ps1
+          }
+          else {
+            .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID
+          }
+      - name: Apply catalog update
+        if: github.event_name == 'workflow_dispatch' && (inputs.update_catalog || inputs.deploy)
+        shell: pwsh
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          APPLICATION_ID: ${{ inputs.application_id }}
+        run: .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID -Apply
+      - name: Commit catalog state
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/applications.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "chore: update Intune application catalog"
+            git push
+          }
+
+  package:
+    needs: update
+    if: always() && github.event_name == 'workflow_dispatch' && (inputs.package || inputs.deploy) && (needs.update.result == 'success' || needs.update.result == 'skipped')
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package applications
+        shell: pwsh
+        run: |
+          $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
+          $app = $catalog.applications | Where-Object id -eq '${{ inputs.application_id }}' | Select-Object -First 1
+          if (-not $app) { throw "Application '${{ inputs.application_id }}' not found in catalog." }
+          .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/applications.json
+          git diff --cached --quiet
+          if ($LASTEXITCODE -ne 0) {
+            git commit -m "chore: persist detected installer metadata"
+            git push
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: intune-packages
+          path: artifacts/**/*.intunewin
+          retention-days: 14
+
+  deploy:
+    needs: package
+    if: always() && github.event_name == 'workflow_dispatch' && inputs.deploy && needs.package.result == 'success'
+    runs-on: windows-latest
+    environment: intune-production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: intune-packages
+          path: artifacts
+      - name: Deploy to Intune
+        shell: pwsh
+        env:
+          INTUNE_TENANT_ID: ${{ secrets.INTUNE_TENANT_ID }}
+          INTUNE_CLIENT_ID: ${{ secrets.INTUNE_CLIENT_ID }}
+          INTUNE_CLIENT_SECRET: ${{ secrets.INTUNE_CLIENT_SECRET }}
+          APPLICATION_ID: ${{ inputs.application_id }}
+        run: |
+          .\scripts\Deploy-IntuneApplication.ps1 -ApplicationId $env:APPLICATION_ID -CatalogPath .\apps\applications.json -PackageRoot .\artifacts
