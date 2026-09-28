@@ -117,6 +117,10 @@ package source confirmed before activation.
 The workflow's application selector lists only packageable applications. To
 activate a staged entry, verify its installer and deployment behavior, then
 add its supported source/package metadata and remove the pending status.
+For a manual run, select `all-validated` to check, package, or deploy every
+catalog entry that is not pending validation. The deployment job applies only
+assignments explicitly configured on each app; apps with no assignments are
+uploaded without being assigned to a group.
 
 The separate **Catalog validation** workflow runs on changes to the catalog,
 scripts, or workflows. It checks catalog fields and unique IDs, confirms the
