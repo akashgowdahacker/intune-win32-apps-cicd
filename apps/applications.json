@@ -10,6 +10,7 @@
       "architecture": "x64",
       "source": {
         "type": "github-release",
+        "referenceUrl": "https://notepad-plus-plus.org/downloads/",
         "repository": "notepad-plus-plus/notepad-plus-plus",
         "assetRegex": "^npp\\.(?<version>[0-9.]+)\\.Installer\\.x64\\.msi$"
       },
@@ -44,6 +45,7 @@
       "architecture": "x64",
       "source": {
         "type": "github-release",
+        "referenceUrl": "http://www.7-zip.org/download.html",
         "repository": "ip7z/7zip",
         "assetRegex": "^7z(?<major>[0-9]{2})(?<minor>[0-9]{2})-x64\\.exe$",
         "versionFormat": "{0}.{1}"
@@ -88,6 +90,7 @@
       "architecture": "x64",
       "source": {
         "type": "direct-url",
+        "referenceUrl": "https://chromeenterprise.google/",
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "versionSource": "installer"
       },
@@ -135,7 +138,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.adobe.com/devnet-docs/acrobatetk/tools/Wizard/index.html"
+        "referenceUrl": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html"
       },
       "pendingReason": "Obtain the licensed enterprise package from Adobe Admin Console and verify its release, track, commands, and detection."
     },
@@ -148,7 +151,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.adobe.com/devnet-docs/acrobatetk/tools/Wizard/index.html"
+        "referenceUrl": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html"
       },
       "pendingReason": "Verify the Reader Continuous enterprise package and 2026 release from Adobe; do not substitute Acrobat Pro or another track."
     },
@@ -161,7 +164,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://learn.microsoft.com/en-us/purview/information-protection-client"
+        "referenceUrl": "https://www.microsoft.com/en-us/download/details.aspx?id=53018"
       },
       "pendingReason": "Confirm whether the current Microsoft Purview Information Protection client or a specific legacy AIP client is required."
     },
@@ -174,7 +177,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.cdburnerxp.se/"
+        "referenceUrl": "https://cdburnerxp.se/en/download"
       },
       "pendingReason": "Verify the current vendor installer, architecture, silent switches, uninstall command, and detection rule."
     },
@@ -187,7 +190,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.cutepdf.com/Products/CutePDF/writer.asp"
+        "referenceUrl": "http://www.cutepdf.com/"
       },
       "pendingReason": "Verify the current installer and silent switches; determine whether the Ghostscript converter dependency must be packaged separately."
     },
@@ -200,7 +203,7 @@
       "architecture": "x86/x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.adobe.com/solutions/ebook/digital-editions/download.html"
+        "referenceUrl": "http://www.adobe.com/solutions/ebook/digital-editions/download.html"
       },
       "pendingReason": "Validate the supported Windows installer, architecture, and unattended install/uninstall behavior before packaging."
     },
@@ -213,7 +216,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://filezilla-project.org/download.php?type=client"
+        "referenceUrl": "https://filezilla-project.org/index.php"
       },
       "pendingReason": "Verify the official installer URL, architecture, installer switches, and uninstall/detection behavior."
     },
@@ -226,7 +229,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.mozilla.org/en-US/firefox/enterprise/"
+        "referenceUrl": "https://www.mozilla.org/en-US/firefox/releases/"
       },
       "pendingReason": "Select the required Firefox release/channel and verify the vendor MSI URL, version, and detection metadata."
     },
@@ -239,7 +242,7 @@
       "architecture": "x86/x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://freemind.sourceforge.io/wiki/index.php/Download"
+        "referenceUrl": "http://freemind.sourceforge.net/wiki/index.php/Download"
       },
       "pendingReason": "Validate the legacy release, Java/runtime dependency, installer source, and unattended install behavior."
     },
@@ -252,7 +255,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.gnuplot.info/download.html"
+        "referenceUrl": "https://sourceforge.net/projects/gnuplot/files/gnuplot/"
       },
       "pendingReason": "Verify an official Windows installer and its version, architecture, silent switches, and detection rule."
     },
@@ -291,7 +294,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.irfanview.com/64bit.htm"
+        "referenceUrl": "http://www.irfanview.com/"
       },
       "pendingReason": "Confirm the required x86 or x64 edition and verify official silent-install switches, plugins, and detection."
     },
@@ -304,7 +307,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.apple.com/itunes/"
+        "referenceUrl": "https://www.apple.com/itunes/download/win64"
       },
       "pendingReason": "Confirm the required Windows product and supported distribution (Store, legacy installer, or Apple device software)."
     },
@@ -317,7 +320,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.jabra.com/software-and-services/jabra-direct"
+        "referenceUrl": "http://www.jabra.com/software-and-services/jabra-direct"
       },
       "pendingReason": "Verify the current official installer, device requirements, and vendor-supported unattended deployment options."
     },
@@ -330,7 +333,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://keepass.info/download.html"
+        "referenceUrl": "http://www.keepass.info/download.html"
       },
       "pendingReason": "Confirm the intended KeePass product/version; the official source does not establish a 'Professional Edition' matching this request."
     },
@@ -343,20 +346,22 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://lame.sourceforge.io/"
+        "referenceUrl": "http://lame.sourceforge.net/download.php"
       },
       "pendingReason": "Select and approve a Windows binary distributor; the project does not provide a verified canonical Windows installer."
     },
     {
       "id": "media-player",
-      "displayName": "Media Player",
-      "publisher": "Unconfirmed",
-      "description": "Media Player product requested for Intune deployment; exact product unresolved",
+      "displayName": "VLC media player",
+      "publisher": "VideoLAN",
+      "description": "VLC media player requested for Intune deployment",
       "status": "pending-validation",
+      "architecture": "x64",
       "source": {
-        "type": "manual"
+        "type": "manual",
+        "referenceUrl": "http://www.videolan.org/vlc/download-windows.html"
       },
-      "pendingReason": "The product is ambiguous. The supplied FreeMind URL identifies FreeMind and does not identify a media player."
+      "pendingReason": "Verify the official Windows installer, architecture, silent switches, and detection rule."
     },
     {
       "id": "openssl",
@@ -367,9 +372,9 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.openssl.org/"
+        "referenceUrl": "https://slproweb.com/products/Win32OpenSSL.html"
       },
-      "pendingReason": "Choose and approve a Windows binary distributor; the OpenSSL project does not provide a canonical official Windows installer."
+      "pendingReason": "This is a third-party Windows binary distributor; approve its provenance and verify installer commands and detection before use."
     },
     {
       "id": "putty",
@@ -393,7 +398,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://ttssh2.osdn.jp/"
+        "referenceUrl": "https://ttssh2.osdn.jp/index.html.en"
       },
       "pendingReason": "Verify the current vendor installer, architecture, unattended switches, and detection rule."
     },
@@ -406,7 +411,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://uvnc.com/"
+        "referenceUrl": "http://www.uvnc.com/downloads/ultravnc"
       },
       "pendingReason": "Identify and verify the standalone Viewer installer rather than the full server package, including its switches and detection."
     },
@@ -432,7 +437,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.realvnc.com/en/connect/download/viewer/"
+        "referenceUrl": "https://www.realvnc.com/download/viewer/"
       },
       "pendingReason": "Confirm RealVNC Viewer is the intended product and verify installer access, account/service requirements, and deployment switches."
     },
@@ -445,9 +450,9 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.winamp.com/"
+        "referenceUrl": "http://meggamusic.co.uk/winamp/Winamp_Download.htm"
       },
-      "pendingReason": "Verify the currently supported Windows release, official installer, and unattended deployment options."
+      "pendingReason": "The supplied download is hosted by a third party; verify provenance and supported release with Winamp before use."
     },
     {
       "id": "winmerge",
@@ -458,7 +463,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://winmerge.org/downloads/"
+        "referenceUrl": "http://winmerge.org/downloads/?lang=en"
       },
       "pendingReason": "Select the required architecture and verify documented silent-install switches and detection."
     },
@@ -471,7 +476,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.win-rar.com/download.html"
+        "referenceUrl": "http://www.win-rar.com/download.html?&L=0"
       },
       "pendingReason": "Verify the stable vendor installer, commercial licensing requirements, and unattended switches."
     },
@@ -484,7 +489,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://winscp.net/eng/docs/installation"
+        "referenceUrl": "https://winscp.net/eng/download.php"
       },
       "pendingReason": "Choose the official MSI or EXE installer and validate its commands and detection in the target environment."
     },
@@ -523,7 +528,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://xmind.com/download"
+        "referenceUrl": "https://www.xmind.net/download/xmind8/"
       },
       "pendingReason": "The current vendor download page does not verify a public XMind 8 installer; confirm legacy access and licensing."
     },
@@ -536,7 +541,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.xnview.com/en/xnview/"
+        "referenceUrl": "https://www.xnview.com/en/"
       },
       "pendingReason": "Confirm classic XnView versus XnView MP, then verify the installer, architecture, licensing, and switches."
     },
@@ -549,9 +554,9 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.sony.com/electronics/support/"
+        "referenceUrl": "https://xperia-companion.en.softonic.com/download?utm_source=SEM&utm_medium=paid&utm_campaign=EN_UK_DSA&gclid=Cj0KCQiA2ZCOBhDiARIsAMRfv9JwSUM_BsMbUhfVBpWr_NZ8itG7d2XLQLwrDF3BXvAdmFtGH69lQMMaAh3_EALw_wcB"
       },
-      "pendingReason": "Confirm current availability and support for target Xperia devices, then verify the installer and unattended options."
+      "pendingReason": "The supplied link is a third-party Softonic download page; verify the installer against Sony's official support source before use."
     },
     {
       "id": "hp-image-assistant",
@@ -562,7 +567,7 @@
       "architecture": "x64",
       "source": {
         "type": "manual",
-        "referenceUrl": "https://www.hp.com/us-en/workstations/software/hp-image-assistant.html"
+        "referenceUrl": "https://ftp.ext.hp.com/pub/caps-softpaq/cmit/HPIA.html"
       },
       "pendingReason": "Assumed to mean HP Image Assistant; verify the current SoftPaq, command-line documentation, and detection."
     },

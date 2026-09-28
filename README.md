@@ -105,7 +105,10 @@ Never commit installer binaries or credentials. Protect the
 The catalog contains three currently packageable applications: Notepad++,
 7-Zip x64, and Google Chrome Enterprise x64. The other requested applications
 are recorded with `status: "pending-validation"` and official vendor reference
-links where available. They are deliberately excluded from automatic catalog
+or supplied reference links where available. A `source.referenceUrl` is
+informational only; it is not used as an installer download URL. Some supplied
+links are third-party downloads and are flagged in the corresponding
+`pendingReason`. Staged applications are deliberately excluded from catalog
 updates and cannot be packaged or deployed until their vendor installer URL,
 silent commands, architecture, and detection rule have been verified. Apps
 requiring licensed, legacy, or organization-specific installers also need their
