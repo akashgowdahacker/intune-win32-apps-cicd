@@ -55,6 +55,13 @@ foreach ($app in $catalog.applications) {
     if (-not $app.package.detectionRule) {
         throw "$($app.id): active application is missing package.detectionRule."
     }
+    if ($app.package.detectionRule.type -eq 'msi' -and
+        [string]::IsNullOrWhiteSpace($app.package.detectionRule.productCode)) {
+        throw "$($app.id): MSI detection requires a productCode."
+    }
+    if ($app.package.detectionRule.type -notin @('file', 'msi')) {
+        throw "$($app.id): unsupported detection rule type '$($app.package.detectionRule.type)'."
+    }
 }
 
 $workflow = Get-Content -LiteralPath $WorkflowPath -Raw
@@ -66,12 +73,20 @@ $workflowIds = @($optionsMatch.Groups['options'].Value -split '\r?\n' |
     ForEach-Object { $_ -replace '^\s+-\s+', '' } |
     Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
     Sort-Object -Unique)
+$bulkOption = @($workflowIds | Where-Object { $_ -eq 'all-validated' })
+$workflowIds = @($workflowIds | Where-Object { $_ -ne 'all-validated' })
 $activeIds = @($catalog.applications |
     Where-Object status -ne 'pending-validation' |
     ForEach-Object id |
     Sort-Object -Unique)
 if (Compare-Object -ReferenceObject $activeIds -DifferenceObject $workflowIds) {
     throw "Workflow selector IDs do not match packageable catalog IDs. Catalog=[$($activeIds -join ', ')], workflow=[$($workflowIds -join ', ')]."
+}
+if ($bulkOption.Count -ne 1) {
+    throw "Workflow selector must include exactly one 'all-validated' option."
+}
+if ($workflow -notmatch '(?m)^\s+ref:\s+\$\{\{\s*github\.ref\s*\}\}\s*$') {
+    throw 'Package and deployment jobs must check out the workflow ref instead of hardcoding main.'
 }
 
 foreach ($scriptPath in Get-ChildItem -LiteralPath "$PSScriptRoot" -Filter '*.ps1' -File) {

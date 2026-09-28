@@ -21,12 +21,14 @@ on:
         default: false
         type: boolean
       application_id:
-        description: Application from the catalog
+        description: Select one packageable app or all apps that passed validation
         required: true
         type: choice
         default: 7zip
         options:
+          - all-validated
           - 7zip
+          - 7zip-x86
           - google-chrome
           - notepadplusplus
 
@@ -45,7 +47,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           APPLICATION_ID: ${{ inputs.application_id }}
         run: |
-          if ([string]::IsNullOrWhiteSpace($env:APPLICATION_ID)) {
+          if ([string]::IsNullOrWhiteSpace($env:APPLICATION_ID) -or $env:APPLICATION_ID -eq 'all-validated') {
             .\scripts\Update-ApplicationCatalog.ps1
           }
           else {
@@ -57,7 +59,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           APPLICATION_ID: ${{ inputs.application_id }}
-        run: .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID -Apply
+        run: |
+          if ($env:APPLICATION_ID -eq 'all-validated') {
+            .\scripts\Update-ApplicationCatalog.ps1 -Apply
+          }
+          else {
+            .\scripts\Update-ApplicationCatalog.ps1 -ApplicationId $env:APPLICATION_ID -Apply
+          }
       - name: Commit catalog state
         shell: pwsh
         run: |
@@ -77,14 +85,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - name: Package applications
         shell: pwsh
+        env:
+          APPLICATION_ID: ${{ inputs.application_id }}
         run: |
           $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
-          $app = $catalog.applications | Where-Object id -eq '${{ inputs.application_id }}' | Select-Object -First 1
-          if (-not $app) { throw "Application '${{ inputs.application_id }}' not found in catalog." }
-          .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
+          if ($env:APPLICATION_ID -eq 'all-validated') {
+            $apps = @($catalog.applications | Where-Object status -ne 'pending-validation')
+          }
+          else {
+            $apps = @($catalog.applications | Where-Object id -eq $env:APPLICATION_ID)
+          }
+          if ($apps.Count -eq 0) { throw "No packageable application found for '$env:APPLICATION_ID'." }
+          foreach ($app in $apps) {
+            .\scripts\Package-IntuneApplication.ps1 -Application $app -CatalogPath .\apps\applications.json -OutputDirectory ".\artifacts\$($app.id)"
+          }
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add apps/applications.json
@@ -107,7 +124,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - uses: actions/download-artifact@v4
         with:
           name: intune-packages
@@ -120,4 +137,14 @@ jobs:
           INTUNE_CLIENT_SECRET: ${{ secrets.INTUNE_CLIENT_SECRET }}
           APPLICATION_ID: ${{ inputs.application_id }}
         run: |
-          .\scripts\Deploy-IntuneApplication.ps1 -ApplicationId $env:APPLICATION_ID -CatalogPath .\apps\applications.json -PackageRoot .\artifacts
+          $catalog = Get-Content .\apps\applications.json -Raw | ConvertFrom-Json
+          if ($env:APPLICATION_ID -eq 'all-validated') {
+            $apps = @($catalog.applications | Where-Object status -ne 'pending-validation')
+          }
+          else {
+            $apps = @($catalog.applications | Where-Object id -eq $env:APPLICATION_ID)
+          }
+          if ($apps.Count -eq 0) { throw "No packageable application found for '$env:APPLICATION_ID'." }
+          foreach ($app in $apps) {
+            .\scripts\Deploy-IntuneApplication.ps1 -ApplicationId $app.id -CatalogPath .\apps\applications.json -PackageRoot .\artifacts
+          }
