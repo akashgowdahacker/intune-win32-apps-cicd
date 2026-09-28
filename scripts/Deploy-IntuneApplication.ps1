@@ -6,18 +6,20 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+$catalog = Get-Content -LiteralPath $CatalogPath -Raw | ConvertFrom-Json
+$app = $catalog.applications | Where-Object id -eq $ApplicationId | Select-Object -First 1
+if (-not $app) { throw "Application '$ApplicationId' was not found in '$CatalogPath'." }
+if ($app.status -eq 'pending-validation') {
+    throw "$ApplicationId is pending vendor validation and cannot be deployed."
+}
+if ([string]::IsNullOrWhiteSpace($app.package.installCommand) -or
+    [string]::IsNullOrWhiteSpace($app.package.uninstallCommand)) {
+    throw "$ApplicationId is missing installCommand or uninstallCommand."
+}
 foreach ($name in 'INTUNE_TENANT_ID', 'INTUNE_CLIENT_ID', 'INTUNE_CLIENT_SECRET') {
     if ([string]::IsNullOrWhiteSpace([Environment]::GetEnvironmentVariable($name))) {
         throw "Required GitHub Actions secret is not configured: $name"
     }
-}
-
-$catalog = Get-Content -LiteralPath $CatalogPath -Raw | ConvertFrom-Json
-$app = $catalog.applications | Where-Object id -eq $ApplicationId | Select-Object -First 1
-if (-not $app) { throw "Application '$ApplicationId' was not found in '$CatalogPath'." }
-if ([string]::IsNullOrWhiteSpace($app.package.installCommand) -or
-    [string]::IsNullOrWhiteSpace($app.package.uninstallCommand)) {
-    throw "$ApplicationId is missing installCommand or uninstallCommand."
 }
 
 $package = Get-ChildItem -LiteralPath (Join-Path $PackageRoot $ApplicationId) -Filter '*.intunewin' -File -Recurse |

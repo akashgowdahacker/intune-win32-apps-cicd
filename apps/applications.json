@@ -10,6 +10,7 @@
       "architecture": "x64",
       "source": {
         "type": "github-release",
+        "referenceUrl": "https://notepad-plus-plus.org/downloads/",
         "repository": "notepad-plus-plus/notepad-plus-plus",
         "assetRegex": "^npp\\.(?<version>[0-9.]+)\\.Installer\\.x64\\.msi$"
       },
@@ -44,6 +45,7 @@
       "architecture": "x64",
       "source": {
         "type": "github-release",
+        "referenceUrl": "http://www.7-zip.org/download.html",
         "repository": "ip7z/7zip",
         "assetRegex": "^7z(?<major>[0-9]{2})(?<minor>[0-9]{2})-x64\\.exe$",
         "versionFormat": "{0}.{1}"
@@ -88,6 +90,7 @@
       "architecture": "x64",
       "source": {
         "type": "direct-url",
+        "referenceUrl": "https://chromeenterprise.google/",
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "versionSource": "installer"
       },
@@ -112,6 +115,474 @@
           "minimumDiskSpaceInMB": 500
         }
       }
+    },
+    {
+      "id": "7zip-x86",
+      "displayName": "7-Zip x86",
+      "publisher": "Igor Pavlov",
+      "description": "7-Zip x86 requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x86",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.7-zip.org/download.html"
+      },
+      "pendingReason": "Select and verify the vendor's x86 installer, silent install/uninstall commands, and architecture-specific detection rule."
+    },
+    {
+      "id": "acrobat-pro-dc-2026",
+      "displayName": "Adobe Acrobat Pro DC (2026)",
+      "publisher": "Adobe",
+      "description": "Adobe Acrobat Pro DC 2026 requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html"
+      },
+      "pendingReason": "Obtain the licensed enterprise package from Adobe Admin Console and verify its release, track, commands, and detection."
+    },
+    {
+      "id": "acrobat-reader-dc-continuous-2026",
+      "displayName": "Adobe Acrobat Reader DC Continuous (2026)",
+      "publisher": "Adobe",
+      "description": "Adobe Acrobat Reader DC Continuous 2026 requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://helpx.adobe.com/acrobat/release-note/release-notes-acrobat-reader.html"
+      },
+      "pendingReason": "Verify the Reader Continuous enterprise package and 2026 release from Adobe; do not substitute Acrobat Pro or another track."
+    },
+    {
+      "id": "azure-information-protection",
+      "displayName": "Azure Information Protection",
+      "publisher": "Microsoft",
+      "description": "Azure Information Protection client requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.microsoft.com/en-us/download/details.aspx?id=53018"
+      },
+      "pendingReason": "Confirm whether the current Microsoft Purview Information Protection client or a specific legacy AIP client is required."
+    },
+    {
+      "id": "cdburnerxp",
+      "displayName": "CDBurnerXP",
+      "publisher": "Canneverbe Limited",
+      "description": "CDBurnerXP requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://cdburnerxp.se/en/download"
+      },
+      "pendingReason": "Verify the current vendor installer, architecture, silent switches, uninstall command, and detection rule."
+    },
+    {
+      "id": "cutepdf-writer",
+      "displayName": "CutePDF Writer",
+      "publisher": "Acro Software",
+      "description": "CutePDF Writer requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.cutepdf.com/"
+      },
+      "pendingReason": "Verify the current installer and silent switches; determine whether the Ghostscript converter dependency must be packaged separately."
+    },
+    {
+      "id": "adobe-digital-editions",
+      "displayName": "Adobe Digital Editions",
+      "publisher": "Adobe",
+      "description": "Adobe Digital Editions requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x86/x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.adobe.com/solutions/ebook/digital-editions/download.html"
+      },
+      "pendingReason": "Validate the supported Windows installer, architecture, and unattended install/uninstall behavior before packaging."
+    },
+    {
+      "id": "filezilla-client",
+      "displayName": "FileZilla Client",
+      "publisher": "FileZilla Project",
+      "description": "FileZilla Client requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://filezilla-project.org/index.php"
+      },
+      "pendingReason": "Verify the official installer URL, architecture, installer switches, and uninstall/detection behavior."
+    },
+    {
+      "id": "mozilla-firefox",
+      "displayName": "Mozilla Firefox",
+      "publisher": "Mozilla",
+      "description": "Mozilla Firefox requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.mozilla.org/en-US/firefox/releases/"
+      },
+      "pendingReason": "Select the required Firefox release/channel and verify the vendor MSI URL, version, and detection metadata."
+    },
+    {
+      "id": "freemind",
+      "displayName": "FreeMind",
+      "publisher": "FreeMind Project",
+      "description": "FreeMind requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x86/x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://freemind.sourceforge.net/wiki/index.php/Download"
+      },
+      "pendingReason": "Validate the legacy release, Java/runtime dependency, installer source, and unattended install behavior."
+    },
+    {
+      "id": "gnuplot",
+      "displayName": "gnuplot",
+      "publisher": "gnuplot",
+      "description": "gnuplot requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://sourceforge.net/projects/gnuplot/files/gnuplot/"
+      },
+      "pendingReason": "Verify an official Windows installer and its version, architecture, silent switches, and detection rule."
+    },
+    {
+      "id": "gpg4win",
+      "displayName": "Gpg4win",
+      "publisher": "Gpg4win Project",
+      "description": "Gpg4win requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.gpg4win.org/download.html"
+      },
+      "pendingReason": "Verify the current signed installer, exact unattended options, and product detection before deployment."
+    },
+    {
+      "id": "graphicsmagick",
+      "displayName": "GraphicsMagick",
+      "publisher": "GraphicsMagick Project",
+      "description": "GraphicsMagick requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.graphicsmagick.org/"
+      },
+      "pendingReason": "Verify the official Windows installer, current version, architecture, and unattended switches."
+    },
+    {
+      "id": "irfanview",
+      "displayName": "IrfanView",
+      "publisher": "Irfan Skiljan",
+      "description": "IrfanView requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.irfanview.com/"
+      },
+      "pendingReason": "Confirm the required x86 or x64 edition and verify official silent-install switches, plugins, and detection."
+    },
+    {
+      "id": "itunes",
+      "displayName": "iTunes",
+      "publisher": "Apple",
+      "description": "iTunes requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.apple.com/itunes/download/win64"
+      },
+      "pendingReason": "Confirm the required Windows product and supported distribution (Store, legacy installer, or Apple device software)."
+    },
+    {
+      "id": "jabra-direct",
+      "displayName": "Jabra Direct",
+      "publisher": "Jabra",
+      "description": "Jabra Direct requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.jabra.com/software-and-services/jabra-direct"
+      },
+      "pendingReason": "Verify the current official installer, device requirements, and vendor-supported unattended deployment options."
+    },
+    {
+      "id": "keepass-professional",
+      "displayName": "KeePass (Professional Edition)",
+      "publisher": "Dominik Reichl",
+      "description": "KeePass requested for Intune deployment; requested edition needs confirmation",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.keepass.info/download.html"
+      },
+      "pendingReason": "Confirm the intended KeePass product/version; the official source does not establish a 'Professional Edition' matching this request."
+    },
+    {
+      "id": "lame",
+      "displayName": "LAME",
+      "publisher": "LAME Project",
+      "description": "LAME requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://lame.sourceforge.net/download.php"
+      },
+      "pendingReason": "Select and approve a Windows binary distributor; the project does not provide a verified canonical Windows installer."
+    },
+    {
+      "id": "media-player",
+      "displayName": "VLC media player",
+      "publisher": "VideoLAN",
+      "description": "VLC media player requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.videolan.org/vlc/download-windows.html"
+      },
+      "pendingReason": "Verify the official Windows installer, architecture, silent switches, and detection rule."
+    },
+    {
+      "id": "openssl",
+      "displayName": "OpenSSL",
+      "publisher": "OpenSSL Project",
+      "description": "OpenSSL requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://slproweb.com/products/Win32OpenSSL.html"
+      },
+      "pendingReason": "This is a third-party Windows binary distributor; approve its provenance and verify installer commands and detection before use."
+    },
+    {
+      "id": "putty",
+      "displayName": "PuTTY",
+      "publisher": "Simon Tatham",
+      "description": "PuTTY requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html"
+      },
+      "pendingReason": "Verify the current official installer, architecture, unattended switches, and detection rule."
+    },
+    {
+      "id": "tera-term",
+      "displayName": "Tera Term",
+      "publisher": "TeraTerm Project",
+      "description": "Tera Term requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://ttssh2.osdn.jp/index.html.en"
+      },
+      "pendingReason": "Verify the current vendor installer, architecture, unattended switches, and detection rule."
+    },
+    {
+      "id": "ultravnc-viewer",
+      "displayName": "UltraVNC Viewer",
+      "publisher": "UltraVNC",
+      "description": "UltraVNC Viewer requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.uvnc.com/downloads/ultravnc"
+      },
+      "pendingReason": "Identify and verify the standalone Viewer installer rather than the full server package, including its switches and detection."
+    },
+    {
+      "id": "virtualbox",
+      "displayName": "Oracle VirtualBox",
+      "publisher": "Oracle",
+      "description": "Oracle VirtualBox requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.virtualbox.org/wiki/Downloads"
+      },
+      "pendingReason": "Verify the current host installer, unattended options, and detection; do not include the separately licensed Extension Pack by default."
+    },
+    {
+      "id": "realvnc-viewer",
+      "displayName": "VNC Viewer",
+      "publisher": "RealVNC",
+      "description": "RealVNC Viewer requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.realvnc.com/download/viewer/"
+      },
+      "pendingReason": "Confirm RealVNC Viewer is the intended product and verify installer access, account/service requirements, and deployment switches."
+    },
+    {
+      "id": "winamp",
+      "displayName": "Winamp",
+      "publisher": "Winamp",
+      "description": "Winamp requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://meggamusic.co.uk/winamp/Winamp_Download.htm"
+      },
+      "pendingReason": "The supplied download is hosted by a third party; verify provenance and supported release with Winamp before use."
+    },
+    {
+      "id": "winmerge",
+      "displayName": "WinMerge",
+      "publisher": "WinMerge Project",
+      "description": "WinMerge requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://winmerge.org/downloads/?lang=en"
+      },
+      "pendingReason": "Select the required architecture and verify documented silent-install switches and detection."
+    },
+    {
+      "id": "winrar",
+      "displayName": "WinRAR",
+      "publisher": "RARLAB",
+      "description": "WinRAR requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "http://www.win-rar.com/download.html?&L=0"
+      },
+      "pendingReason": "Verify the stable vendor installer, commercial licensing requirements, and unattended switches."
+    },
+    {
+      "id": "winscp",
+      "displayName": "WinSCP",
+      "publisher": "WinSCP",
+      "description": "WinSCP requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://winscp.net/eng/download.php"
+      },
+      "pendingReason": "Choose the official MSI or EXE installer and validate its commands and detection in the target environment."
+    },
+    {
+      "id": "winzip",
+      "displayName": "WinZip",
+      "publisher": "Corel",
+      "description": "WinZip requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.winzip.com/en/download/winzip/"
+      },
+      "pendingReason": "Confirm organizational licensing and verify the current installer and vendor-supported silent deployment options."
+    },
+    {
+      "id": "wireshark",
+      "displayName": "Wireshark",
+      "publisher": "Wireshark Foundation",
+      "description": "Wireshark requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.wireshark.org/download.html"
+      },
+      "pendingReason": "Verify current installer, architecture, capture-driver dependency, unattended switches, and security update policy."
+    },
+    {
+      "id": "xmind-8",
+      "displayName": "XMind 8",
+      "publisher": "XMind",
+      "description": "Legacy XMind 8 requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.xmind.net/download/xmind8/"
+      },
+      "pendingReason": "The current vendor download page does not verify a public XMind 8 installer; confirm legacy access and licensing."
+    },
+    {
+      "id": "xnview",
+      "displayName": "XnView",
+      "publisher": "XnSoft",
+      "description": "XnView requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.xnview.com/en/"
+      },
+      "pendingReason": "Confirm classic XnView versus XnView MP, then verify the installer, architecture, licensing, and switches."
+    },
+    {
+      "id": "xperia-companion",
+      "displayName": "Xperia Companion",
+      "publisher": "Sony",
+      "description": "Xperia Companion requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://xperia-companion.en.softonic.com/download?utm_source=SEM&utm_medium=paid&utm_campaign=EN_UK_DSA&gclid=Cj0KCQiA2ZCOBhDiARIsAMRfv9JwSUM_BsMbUhfVBpWr_NZ8itG7d2XLQLwrDF3BXvAdmFtGH69lQMMaAh3_EALw_wcB"
+      },
+      "pendingReason": "The supplied link is a third-party Softonic download page; verify the installer against Sony's official support source before use."
+    },
+    {
+      "id": "hp-image-assistant",
+      "displayName": "HP Image Assistant",
+      "publisher": "HP",
+      "description": "HP Image Assistant requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://ftp.ext.hp.com/pub/caps-softpaq/cmit/HPIA.html"
+      },
+      "pendingReason": "Assumed to mean HP Image Assistant; verify the current SoftPaq, command-line documentation, and detection."
+    },
+    {
+      "id": "ghostscript",
+      "displayName": "Ghostscript",
+      "publisher": "Artifex",
+      "description": "Ghostscript requested for Intune deployment",
+      "status": "pending-validation",
+      "architecture": "x64",
+      "source": {
+        "type": "manual",
+        "referenceUrl": "https://www.ghostscript.com/releases/gsdnld.html"
+      },
+      "pendingReason": "Confirm AGPL versus commercial licensing and verify the current Windows installer and unattended options."
     }
   ]
 }

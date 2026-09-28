@@ -12,10 +12,19 @@ $applications = if ($ApplicationId) {
     @($catalog.applications | Where-Object id -eq $ApplicationId)
 }
 else {
-    @($catalog.applications)
+    @($catalog.applications | Where-Object status -ne 'pending-validation')
 }
 if ($ApplicationId -and $applications.Count -eq 0) {
     throw "Application '$ApplicationId' was not found in '$CatalogPath'."
+}
+if ($ApplicationId -and $applications[0].status -eq 'pending-validation') {
+    throw "Application '$ApplicationId' is pending vendor validation and cannot be updated."
+}
+if (-not $ApplicationId) {
+    $pendingCount = @($catalog.applications | Where-Object status -eq 'pending-validation').Count
+    if ($pendingCount -gt 0) {
+        Write-Host "Skipping $pendingCount application(s) pending vendor validation."
+    }
 }
 New-Item -ItemType Directory -Path $DownloadRoot -Force | Out-Null
 $githubHeaders = @{ 'User-Agent' = 'intune-packaging'; 'Accept' = 'application/vnd.github+json' }
