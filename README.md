@@ -102,10 +102,10 @@ Never commit installer binaries or credentials. Protect the
 
 ## Application status
 
-The catalog contains seven currently packageable applications: Notepad++,
+The catalog contains eight currently packageable applications: Notepad++,
 7-Zip x86 and x64, Google Chrome Enterprise x64, Microsoft Purview Information
-Protection 3.2.92.0, PuTTY 0.85 x64, and WinSCP 6.5.7. The other requested
-applications are recorded with
+Protection 3.2.92.0, PuTTY 0.85 x64, VLC 3.0.24 x64, and WinSCP 6.5.7. The
+other requested applications are recorded with
 `status: "pending-validation"` and official vendor reference or supplied
 reference links where available. A
 `source.referenceUrl` is informational only; it is not used as an installer
@@ -143,6 +143,8 @@ and MSI product code from the downloaded installer because the URL does not
 contain a version. WinSCP's official page supplies a time-limited CDN download
 link; the packager resolves it at package time and verifies the vendor-published
 SHA-256 and code-signing certificate before smoke testing the installer.
+VLC's official download page provides the selected mirror, publisher checksum,
+and signer; the package verifies both checksum and Authenticode signature.
 The Purview client wrapper sets Microsoft's documented
 `AllowMajorVersionUpgrade` registry value before silent MSI installation so
 non-interactive upgrades from the legacy AIP client can proceed. Microsoft

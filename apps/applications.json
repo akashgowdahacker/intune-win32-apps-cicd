@@ -429,14 +429,42 @@
       "id": "media-player",
       "displayName": "VLC media player",
       "publisher": "VideoLAN",
-      "description": "VLC media player requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "VLC media player 3.0.24 x64 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "exe",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "http://www.videolan.org/vlc/download-windows.html"
+        "type": "direct-url",
+        "referenceUrl": "https://www.videolan.org/vlc/download-windows.html",
+        "downloadUrl": "https://mirror.bom2.albony.in/videolan-ftp/vlc/3.0.24/win64/vlc-3.0.24-win64.exe",
+        "fileName": "vlc-3.0.24-win64.exe",
+        "versionRegex": "^vlc-(?<version>[0-9.]+)-win64\\.exe$",
+        "sha256": "D711E1E1FE52052748C39080C7DCE63F6B7E4C315EFEDF1774A3F1957B782FF3",
+        "signerSubject": "VideoLAN"
       },
-      "pendingReason": "Verify the official Windows installer, architecture, silent switches, and detection rule."
+      "currentVersion": "3.0.24",
+      "previousVersion": null,
+      "availableVersion": "3.0.24",
+      "package": {
+        "setupFile": "vlc-3.0.24-win64.exe",
+        "downloadUrl": "https://mirror.bom2.albony.in/videolan-ftp/vlc/3.0.24/win64/vlc-3.0.24-win64.exe",
+        "installCommand": "vlc-3.0.24-win64.exe /L=1033 /S",
+        "uninstallCommand": "\"%ProgramFiles%\\VideoLAN\\VLC\\uninstall.exe\" /S",
+        "upgradeBehavior": "in-place",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "file",
+          "path": "C:\\Program Files\\VideoLAN\\VLC",
+          "fileOrFolderName": "vlc.exe",
+          "detectionMethod": "exists"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 300
+        }
+      }
     },
     {
       "id": "openssl",

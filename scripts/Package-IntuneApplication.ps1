@@ -57,12 +57,19 @@ if ($Application.source.signerSubject) {
     }
 }
 
-$metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType $Application.installerType
-if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
-    throw "Installer metadata extraction returned no output for '$installer'."
+$metadata = [pscustomobject]@{
+    version = $Application.currentVersion
+    productCode = $null
+    installCommand = $Application.package.installCommand
+    uninstallCommand = $Application.package.uninstallCommand
+    detectionRule = $Application.package.detectionRule
 }
-$metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
 if ($Application.installerType -eq 'msi') {
+    $metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType msi
+    if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
+        throw "Installer metadata extraction returned no output for '$installer'."
+    }
+    $metadata = ($metadataJson -join [Environment]::NewLine) | ConvertFrom-Json
     $Application.package.installCommand = if ($installScriptName) {
         "powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installScriptName"
     }
