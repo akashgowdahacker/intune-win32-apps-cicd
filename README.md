@@ -118,6 +118,12 @@ The workflow's application selector lists only packageable applications. To
 activate a staged entry, verify its installer and deployment behavior, then
 add its supported source/package metadata and remove the pending status.
 
+The separate **Catalog validation** workflow runs on changes to the catalog,
+scripts, or workflows. It checks catalog fields and unique IDs, confirms the
+Intune selector matches packageable entries, parses all PowerShell scripts, and
+smoke-tests that pending apps are rejected before download or deployment.
+It does not download installers, package apps, or require Intune credentials.
+
 Notepad++ and 7-Zip x64 are discovered from GitHub release assets. Chrome uses
 Google's stable Enterprise MSI URL and reads its version and MSI product code
 from the downloaded installer because the URL does not contain a version.
