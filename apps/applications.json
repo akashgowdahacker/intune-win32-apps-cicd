@@ -429,14 +429,38 @@
       "id": "putty",
       "displayName": "PuTTY",
       "publisher": "Simon Tatham",
-      "description": "PuTTY requested for Intune deployment",
-      "status": "pending-validation",
+      "description": "PuTTY 0.85 x64 MSI - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
+      "installerType": "msi",
       "architecture": "x64",
       "source": {
-        "type": "manual",
-        "referenceUrl": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html"
+        "type": "direct-url",
+        "referenceUrl": "https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html",
+        "downloadUrl": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-installer.msi",
+        "signerSubject": "Simon Tatham",
+        "versionSource": "installer"
       },
-      "pendingReason": "Verify the current official installer, architecture, unattended switches, and detection rule."
+      "currentVersion": "0.85.0.0",
+      "previousVersion": null,
+      "availableVersion": "0.85.0.0",
+      "package": {
+        "setupFile": "putty-64bit-installer.msi",
+        "downloadUrl": "https://the.earth.li/~sgtatham/putty/latest/w64/putty-64bit-installer.msi",
+        "upgradeBehavior": "in-place",
+        "installCommand": "msiexec /i putty-64bit-installer.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {3B0346D3-155D-43E5-9561-B9BE51CF2EB6} /qn /norestart",
+        "installExperience": "system",
+        "restartBehavior": "suppress",
+        "detectionRule": {
+          "type": "msi",
+          "productCode": "{3B0346D3-155D-43E5-9561-B9BE51CF2EB6}"
+        },
+        "requirements": {
+          "minimumOS": "W10-21H2",
+          "architecture": "x64",
+          "minimumDiskSpaceInMB": 100
+        }
+      }
     },
     {
       "id": "tera-term",

@@ -31,6 +31,7 @@ on:
           - 7zip-x86
           - google-chrome
           - notepadplusplus
+          - putty
           - winscp
 
 permissions:

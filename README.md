@@ -102,10 +102,11 @@ Never commit installer binaries or credentials. Protect the
 
 ## Application status
 
-The catalog contains five currently packageable applications: Notepad++,
-7-Zip x86 and x64, Google Chrome Enterprise x64, and WinSCP 6.5.7. The other
-requested applications are recorded with `status: "pending-validation"` and
-official vendor reference or supplied reference links where available. A
+The catalog contains six currently packageable applications: Notepad++,
+7-Zip x86 and x64, Google Chrome Enterprise x64, PuTTY 0.85 x64, and WinSCP
+6.5.7. The other requested applications are recorded with
+`status: "pending-validation"` and official vendor reference or supplied
+reference links where available. A
 `source.referenceUrl` is informational only; it is not used as an installer
 download URL. Some supplied links are third-party downloads and are flagged in
 the corresponding `pendingReason`. Staged applications are deliberately
