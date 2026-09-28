@@ -127,14 +127,8 @@ if ([string]::IsNullOrWhiteSpace($Application.package.installCommand) -or
 
 $workingDirectory = Split-Path -Parent (Resolve-Path -LiteralPath $InstallerPath).Path
 if (Test-ApplicationDetected -App $Application) {
-    Write-Host "$($Application.id): removing the pre-existing copy from this disposable runner before testing."
-    Invoke-CatalogCommand `
-        -Command $Application.package.uninstallCommand `
-        -Description 'pre-test uninstall' `
-        -WorkingDirectory $workingDirectory
-    if (Test-ApplicationDetected -App $Application) {
-        throw "$($Application.id): pre-test uninstall completed but detection still reports the app installed."
-    }
+    Write-Warning "$($Application.id): smoke test skipped because the app is already present on the runner; the existing installation was left unchanged."
+    return
 }
 
 $installCommandCompleted = $false

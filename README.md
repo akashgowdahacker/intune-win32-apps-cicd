@@ -121,11 +121,13 @@ For a manual run, select `all-validated` to check, package, or deploy every
 catalog entry that is not pending validation. The deployment job applies only
 assignments explicitly configured on each app; apps with no assignments are
 uploaded without being assigned to a group.
-Before upload, the packaging job also runs each catalog install command on its
+Before upload, the packaging job runs each catalog install command on its
 disposable Windows runner, confirms the configured MSI/file detection rule,
 uninstalls the app, and confirms removal. A failed install, detection, or
-uninstall blocks the deployment job. This is a smoke test on GitHub's Windows
-image, not a substitute for validating behavior on managed endpoint models.
+uninstall blocks the deployment job. If the runner image already contains the
+app, the test skips it rather than modifying that pre-existing installation.
+This is a smoke test on GitHub's Windows image, not a substitute for validating
+behavior on managed endpoint models.
 
 The separate **Catalog validation** workflow runs on changes to the catalog,
 scripts, or workflows. It checks catalog fields and unique IDs, confirms the
