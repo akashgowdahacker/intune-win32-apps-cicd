@@ -16,7 +16,7 @@
       },
       "currentVersion": "8.9.8.1",
       "previousVersion": "8.9.8",
-      "availableVersion": null,
+      "availableVersion": "8.9.8.1",
       "package": {
         "setupFile": "npp.8.9.8.1.Installer.x64.msi",
         "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.msi",
