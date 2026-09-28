@@ -100,9 +100,21 @@ Company Portal to group members; it does not force installation.
 Never commit installer binaries or credentials. Protect the
 `intune-production` environment with required reviewers.
 
-## Included applications
+## Application status
 
-The catalog includes Notepad++, 7-Zip x64, and Google Chrome Enterprise x64.
-7-Zip is discovered from its GitHub release assets. Chrome uses Google's
-stable Enterprise MSI URL and reads its version and MSI product code from the
-downloaded installer because the URL does not contain a version.
+The catalog contains three currently packageable applications: Notepad++,
+7-Zip x64, and Google Chrome Enterprise x64. The other requested applications
+are recorded with `status: "pending-validation"` and official vendor reference
+links where available. They are deliberately excluded from automatic catalog
+updates and cannot be packaged or deployed until their vendor installer URL,
+silent commands, architecture, and detection rule have been verified. Apps
+requiring licensed, legacy, or organization-specific installers also need their
+package source confirmed before activation.
+
+The workflow's application selector lists only packageable applications. To
+activate a staged entry, verify its installer and deployment behavior, then
+add its supported source/package metadata and remove the pending status.
+
+Notepad++ and 7-Zip x64 are discovered from GitHub release assets. Chrome uses
+Google's stable Enterprise MSI URL and reads its version and MSI product code
+from the downloaded installer because the URL does not contain a version.

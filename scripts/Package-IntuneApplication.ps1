@@ -7,6 +7,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+if ($Application.status -eq 'pending-validation') {
+    throw "$($Application.id): application is pending vendor validation and cannot be packaged."
+}
 if ([string]::IsNullOrWhiteSpace($Application.package.downloadUrl)) {
     throw "$($Application.id): package.downloadUrl is missing. Run the catalog update first."
 }
