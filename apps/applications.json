@@ -21,13 +21,13 @@
         "setupFile": "npp.8.9.8.1.Installer.x64.msi",
         "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.msi",
         "upgradeBehavior": "in-place",
-        "installCommand": "msiexec /i npp.8.9.8.Installer.x64.msi /qn /norestart",
-        "uninstallCommand": "msiexec /x {224C0E17-FB79-4AE2-9A47-5556FCEF39C4} /qn /norestart",
+        "installCommand": "msiexec /i npp.8.9.8.1.Installer.x64.msi /qn /norestart",
+        "uninstallCommand": "msiexec /x {5C6F8543-7EA8-40B9-B78F-04C78300DE7F} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": "{224C0E17-FB79-4AE2-9A47-5556FCEF39C4}"
+          "productCode": "{5C6F8543-7EA8-40B9-B78F-04C78300DE7F}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
