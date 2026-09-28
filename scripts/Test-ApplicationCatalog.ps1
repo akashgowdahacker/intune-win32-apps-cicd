@@ -18,7 +18,7 @@ if ($duplicateIds.Count -gt 0) {
     throw "Duplicate application IDs: $(($duplicateIds.Name) -join ', ')."
 }
 
-$supportedSourceTypes = @('github-release', 'direct-url')
+$supportedSourceTypes = @('github-release', 'direct-url', 'winscp-download')
 foreach ($app in $catalog.applications) {
     if ([string]::IsNullOrWhiteSpace($app.id) -or
         [string]::IsNullOrWhiteSpace($app.displayName) -or
@@ -41,6 +41,16 @@ foreach ($app in $catalog.applications) {
     }
     if ($app.source.type -notin $supportedSourceTypes) {
         throw "$($app.id): unsupported package source '$($app.source.type)'."
+    }
+    if ($app.source.sha256 -and $app.source.sha256 -notmatch '^[0-9a-fA-F]{64}$') {
+        throw "$($app.id): source.sha256 must contain exactly 64 hexadecimal characters."
+    }
+    if ($app.source.type -eq 'winscp-download' -and
+        ([string]::IsNullOrWhiteSpace($app.source.downloadPageUrl) -or
+            [string]::IsNullOrWhiteSpace($app.source.fileName) -or
+            [string]::IsNullOrWhiteSpace($app.source.signerSubject) -or
+            [string]::IsNullOrWhiteSpace($app.source.sha256))) {
+        throw "$($app.id): winscp-download requires downloadPageUrl, fileName, signerSubject, and sha256."
     }
     foreach ($property in 'installerType', 'architecture', 'currentVersion') {
         if ([string]::IsNullOrWhiteSpace([string]$app.$property)) {

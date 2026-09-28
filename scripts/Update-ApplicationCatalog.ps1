@@ -40,21 +40,27 @@ foreach ($app in $applications) {
         $assetName = $asset.name
         $downloadUrl = $asset.browser_download_url
     }
-    elseif ($app.source.type -eq 'direct-url') {
-        $downloadUrl = $app.source.downloadUrl
-        $assetName = if ($app.source.fileName) {
-            $app.source.fileName
+    elseif ($app.source.type -in @('direct-url', 'winscp-download')) {
+        if ($app.source.type -eq 'winscp-download') {
+            $assetName = $app.source.fileName
+            $downloadUrl = $app.source.downloadPageUrl
         }
         else {
-            [IO.Path]::GetFileName(([Uri]$downloadUrl).AbsolutePath)
+            $downloadUrl = $app.source.downloadUrl
+            $assetName = if ($app.source.fileName) {
+                $app.source.fileName
+            }
+            else {
+                [IO.Path]::GetFileName(([Uri]$downloadUrl).AbsolutePath)
+            }
         }
         if ([string]::IsNullOrWhiteSpace($assetName) -or
             [IO.Path]::GetFileName($assetName) -ne $assetName) {
-            throw "$($app.id): direct-url source needs a valid fileName when its URL has no installer filename."
+            throw "$($app.id): source needs a valid fileName when its download URL has no installer filename."
         }
     }
     else {
-        throw "$($app.id): unsupported source type '$($app.source.type)'. Use github-release or direct-url."
+        throw "$($app.id): unsupported source type '$($app.source.type)'."
     }
 
     $versionPattern = if ($app.source.versionRegex) {
@@ -72,7 +78,7 @@ foreach ($app in $applications) {
     $match = if ($versionPattern) { [regex]::Match($assetName, $versionPattern) } else { $null }
     if ($app.source.versionSource -eq 'installer') {
         $probePath = Join-Path $DownloadRoot $assetName
-        Invoke-WebRequest -Uri $downloadUrl -OutFile $probePath
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $probePath -UseBasicParsing
         $metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $probePath -InstallerType $app.installerType
         if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
             throw "$($app.id): installer metadata returned no version."

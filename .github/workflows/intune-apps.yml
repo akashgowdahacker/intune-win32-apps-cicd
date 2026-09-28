@@ -30,8 +30,8 @@ on:
           - 7zip
           - 7zip-x86
           - google-chrome
-          - mozilla-firefox
           - notepadplusplus
+          - winscp
 
 permissions:
   contents: write

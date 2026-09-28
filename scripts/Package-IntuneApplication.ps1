@@ -18,7 +18,33 @@ $source = Join-Path $OutputDirectory 'source'
 $package = Join-Path $OutputDirectory 'package'
 New-Item -ItemType Directory -Path $source,$package -Force | Out-Null
 $installer = Join-Path $source $Application.package.setupFile
-Invoke-WebRequest -Uri $Application.package.downloadUrl -OutFile $installer
+$downloadUrl = $Application.package.downloadUrl
+if ($Application.source.type -eq 'winscp-download') {
+    $downloadPage = Invoke-WebRequest -Uri $Application.source.downloadPageUrl -UseBasicParsing
+    $fileNamePattern = [regex]::Escape($Application.package.setupFile)
+    $downloadMatch = [regex]::Match(
+        $downloadPage.Content,
+        "href=[""'](?<url>https://cdn\.winscp\.net/files/$fileNamePattern\?secure=[^""']+)[""']"
+    )
+    if (-not $downloadMatch.Success) {
+        throw "$($Application.id): vendor download page did not provide a signed CDN URL for '$($Application.package.setupFile)'."
+    }
+    $downloadUrl = [Net.WebUtility]::HtmlDecode($downloadMatch.Groups['url'].Value)
+}
+Invoke-WebRequest -Uri $downloadUrl -OutFile $installer -UseBasicParsing
+if ($Application.source.sha256) {
+    $actualHash = (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash
+    if ($actualHash -ine $Application.source.sha256) {
+        throw "$($Application.id): installer SHA-256 '$actualHash' did not match the catalog value."
+    }
+}
+if ($Application.source.signerSubject) {
+    $signature = Get-AuthenticodeSignature -FilePath $installer
+    if ($signature.Status -ne 'Valid' -or
+        $signature.SignerCertificate.Subject -notlike "*$($Application.source.signerSubject)*") {
+        throw "$($Application.id): installer signature is invalid or is not signed by '$($Application.source.signerSubject)'."
+    }
+}
 
 $metadataJson = & "$PSScriptRoot\Get-InstallerMetadata.ps1" -InstallerPath $installer -InstallerType $Application.installerType
 if ([string]::IsNullOrWhiteSpace(($metadataJson -join ''))) {
@@ -34,7 +60,7 @@ if ($Application.installerType -eq 'msi') {
     }
 }
 if (-not (Test-Path -LiteralPath $ToolPath)) {
-    Invoke-WebRequest -Uri 'https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe' -OutFile $ToolPath
+    Invoke-WebRequest -Uri 'https://github.com/microsoft/Microsoft-Win32-Content-Prep-Tool/raw/master/IntuneWinAppUtil.exe' -OutFile $ToolPath -UseBasicParsing
 }
 & $ToolPath -c $source -s $Application.package.setupFile -o $package -q
 if ($LASTEXITCODE -ne 0) { throw "IntuneWinAppUtil failed with exit code $LASTEXITCODE." }

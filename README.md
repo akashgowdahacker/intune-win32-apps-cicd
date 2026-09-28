@@ -103,16 +103,16 @@ Never commit installer binaries or credentials. Protect the
 ## Application status
 
 The catalog contains five currently packageable applications: Notepad++,
-7-Zip x86 and x64, Google Chrome Enterprise x64, and Firefox x64 MSI. The other requested
-applications are recorded with `status: "pending-validation"` and official
-vendor reference or supplied reference links where available. A `source.referenceUrl` is
-informational only; it is not used as an installer download URL. Some supplied
-links are third-party downloads and are flagged in the corresponding
-`pendingReason`. Staged applications are deliberately excluded from catalog
-updates and cannot be packaged or deployed until their vendor installer URL,
-silent commands, architecture, and detection rule have been verified. Apps
-requiring licensed, legacy, or organization-specific installers also need their
-package source confirmed before activation.
+7-Zip x86 and x64, Google Chrome Enterprise x64, and WinSCP 6.5.7. The other
+requested applications are recorded with `status: "pending-validation"` and
+official vendor reference or supplied reference links where available. A
+`source.referenceUrl` is informational only; it is not used as an installer
+download URL. Some supplied links are third-party downloads and are flagged in
+the corresponding `pendingReason`. Staged applications are deliberately
+excluded from catalog updates and cannot be packaged or deployed until their
+vendor installer URL, silent commands, architecture, and detection rule have
+been verified. Apps requiring licensed, legacy, or organization-specific
+installers also need their package source confirmed before activation.
 
 The workflow's application selector lists only packageable applications. To
 activate a staged entry, verify its installer and deployment behavior, then
@@ -136,4 +136,6 @@ It does not download installers, package apps, or require Intune credentials.
 Notepad++ and both 7-Zip architectures are discovered from GitHub release
 assets. Chrome uses Google's stable Enterprise MSI URL and reads its version
 and MSI product code from the downloaded installer because the URL does not
-contain a version.
+contain a version. WinSCP's official page supplies a time-limited CDN download
+link; the packager resolves it at package time and verifies the vendor-published
+SHA-256 and code-signing certificate before smoke testing the installer.
