@@ -6,6 +6,7 @@
       "displayName": "Notepad++",
       "publisher": "Notepad++ Team",
       "description": "Notepad++ x64 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
       "installerType": "msi",
       "architecture": "x64",
       "source": {
@@ -41,6 +42,7 @@
       "displayName": "7-Zip",
       "publisher": "Igor Pavlov",
       "description": "7-Zip x64 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
       "installerType": "exe",
       "architecture": "x64",
       "source": {
@@ -86,6 +88,7 @@
       "displayName": "Google Chrome Enterprise",
       "publisher": "Google LLC",
       "description": "Google Chrome Enterprise x64 - deployed via CI/CD and Microsoft Intune",
+      "status": "active",
       "installerType": "msi",
       "architecture": "x64",
       "source": {
