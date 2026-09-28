@@ -21,7 +21,9 @@ function Test-ApplicationDetected {
             }
             $windowsInstaller = New-Object -ComObject WindowsInstaller.Installer
             try {
-                return $windowsInstaller.ProductState($productCode) -eq 5
+                $productState = $windowsInstaller.ProductState($productCode)
+                Write-Host "$($App.id): Windows Installer ProductState for $productCode is $productState."
+                return $productState -eq 5
             }
             finally {
                 [void][Runtime.InteropServices.Marshal]::FinalReleaseComObject($windowsInstaller)
@@ -104,12 +106,19 @@ if (Test-ApplicationDetected -App $Application) {
     }
 }
 
+$installCommandCompleted = $false
 try {
     Invoke-CatalogCommand `
         -Command $Application.package.installCommand `
         -Description 'install' `
         -WorkingDirectory $workingDirectory
+    $installCommandCompleted = $true
     if (-not (Test-ApplicationDetected -App $Application)) {
+        Invoke-CatalogCommand `
+            -Command $Application.package.uninstallCommand `
+            -Description 'cleanup after undetected install' `
+            -WorkingDirectory $workingDirectory
+        $installCommandCompleted = $false
         throw "$($Application.id): install completed but the catalog detection rule did not match."
     }
     Write-Host "$($Application.id): catalog detection confirmed the installation."
@@ -118,17 +127,19 @@ try {
         -Command $Application.package.uninstallCommand `
         -Description 'uninstall' `
         -WorkingDirectory $workingDirectory
+    $installCommandCompleted = $false
     if (Test-ApplicationDetected -App $Application) {
         throw "$($Application.id): uninstall completed but the catalog detection rule still matches."
     }
     Write-Host "$($Application.id): catalog detection confirmed removal."
 }
 finally {
-    if (Test-ApplicationDetected -App $Application) {
+    if ($installCommandCompleted) {
         Invoke-CatalogCommand `
             -Command $Application.package.uninstallCommand `
             -Description 'cleanup uninstall' `
             -WorkingDirectory $workingDirectory
+        $installCommandCompleted = $false
         if (Test-ApplicationDetected -App $Application) {
             throw "$($Application.id): cleanup uninstall completed but the app is still detected."
         }
