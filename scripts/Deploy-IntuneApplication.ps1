@@ -60,6 +60,7 @@ $matchingApps = @(Get-IntuneWin32App -DisplayName $app.displayName |
         ($_.displayName -ceq $app.displayName -or $_.displayName -like "$($app.displayName)*")
     })
 
+$catalogVersion = Get-ComparableVersion $app.currentVersion
 $productionApp = $null
 $productionVersion = [version]'0.0.0'
 foreach ($candidate in $matchingApps) {
@@ -71,19 +72,32 @@ foreach ($candidate in $matchingApps) {
     }
 }
 
+$lowerVersionApps = @($matchingApps | Where-Object {
+    $candidateVersion = if ($_.appVersion) { $_.appVersion } else { $_.displayName -replace '^.*\((?<version>.*)\)$', '$1' }
+    (Get-ComparableVersion $candidateVersion) -lt $productionVersion
+})
+if ($lowerVersionApps.Count -gt 0) {
+    Write-Host "Ignoring $($lowerVersionApps.Count) stale lower-version Intune app(s) for '$($app.displayName)' while keeping the latest production version as the active app."
+}
+
 $versionedName = "$($app.displayName) ($($app.currentVersion))"
 $versionedApp = @($matchingApps | Where-Object { $_.displayName -ceq $versionedName } | Select-Object -First 1)
 $stagedNewVersion = $false
 
 $intuneApp = $null
-if ($matchingApps.Count -gt 0 -and $productionApp -and (Get-ComparableVersion $app.currentVersion) -le $productionVersion) {
+if ($matchingApps.Count -gt 0 -and $productionApp -and $catalogVersion -le $productionVersion) {
     $intuneApp = $productionApp
     if ($intuneApp.publisher -cne $app.publisher) {
         throw "The existing '$($app.displayName)' app has publisher '$($intuneApp.publisher)', not '$($app.publisher)'; refusing to assign a potentially unrelated app."
     }
-    Write-Host "Reusing existing Intune Win32 app '$($app.displayName)' (ID: $($intuneApp.id)); package content will not be changed."
+    if ($catalogVersion -eq $productionVersion) {
+        Write-Host "No staged upgrade created for '$($app.displayName)' because the catalog version ($catalogVersion) matches the newest Intune production version ($productionVersion); ignoring lower-version duplicates."
+    }
+    else {
+        Write-Host "No staged upgrade created for '$($app.displayName)' because the catalog version ($catalogVersion) is lower than the newest Intune production version ($productionVersion); ignoring stale lower-version app(s)."
+    }
 }
-elseif ($matchingApps.Count -gt 0 -and $productionApp -and (Get-ComparableVersion $app.currentVersion) -gt $productionVersion) {
+elseif ($matchingApps.Count -gt 0 -and $productionApp -and $catalogVersion -gt $productionVersion) {
     if (-not $versionedApp) {
         $detectionRule = switch ($app.package.detectionRule.type) {
             'file' {
