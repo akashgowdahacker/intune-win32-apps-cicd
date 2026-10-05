@@ -137,6 +137,16 @@ Intune selector matches packageable entries, parses all PowerShell scripts, and
 smoke-tests that pending apps are rejected before download or deployment.
 It does not download installers, package apps, or require Intune credentials.
 
+## Copilot custom agent
+
+The **Intune App Lifecycle** custom agent is defined in
+`.github/agents/intune-app-lifecycle.agent.md`. Select it from the Copilot agent
+picker to review or update catalog entries, inspect lifecycle behavior, or
+prepare app validation. It starts by asking what to test, check, or implement
+and which application is involved. It can prepare changes and run static
+validation, but real installer lifecycle checks still run on the disposable
+Windows Actions runner. It does not deploy to Intune unless explicitly asked.
+
 Notepad++ and both 7-Zip architectures are discovered from GitHub release
 assets. Chrome uses Google's stable Enterprise MSI URL and reads its version
 and MSI product code from the downloaded installer because the URL does not
