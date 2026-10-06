@@ -54,7 +54,7 @@
       },
       "currentVersion": "26.03",
       "previousVersion": null,
-      "availableVersion": "26.03",
+      "availableVersion": "26.04",
       "assignments": [
         {
           "groupId": "70fa4f45-c587-4799-b409-ef4a3ad4a2bf",
@@ -63,8 +63,8 @@
         }
       ],
       "package": {
-        "setupFile": "7z2603-x64.exe",
-        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603-x64.exe",
+        "setupFile": "7z2604-x64.exe",
+        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.04/7z2604-x64.exe",
         "upgradeBehavior": "in-place",
         "installCommand": "7z2603-x64.exe /S",
         "uninstallCommand": "\"%ProgramFiles%\\7-Zip\\Uninstall.exe\" /S",
@@ -136,10 +136,10 @@
       },
       "currentVersion": "26.03",
       "previousVersion": null,
-      "availableVersion": "26.03",
+      "availableVersion": "26.04",
       "package": {
-        "setupFile": "7z2603.msi",
-        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.03/7z2603.msi",
+        "setupFile": "7z2604.msi",
+        "downloadUrl": "https://github.com/ip7z/7zip/releases/download/26.04/7z2604.msi",
         "upgradeBehavior": "in-place",
         "installCommand": "msiexec /i 7z2603.msi /qn /norestart",
         "uninstallCommand": "msiexec /x {23170F69-40C1-2701-2603-000001000000} /qn /norestart",
