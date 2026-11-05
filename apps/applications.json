@@ -97,9 +97,9 @@
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "versionSource": "installer"
       },
-      "currentVersion": "154.0.8037.58",
-      "previousVersion": "0.0.0",
-      "availableVersion": "157.0.8103.39",
+      "currentVersion": "157.0.8103.39",
+      "previousVersion": "154.0.8037.58",
+      "availableVersion": null,
       "package": {
         "setupFile": "googlechromestandaloneenterprise64.msi",
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
