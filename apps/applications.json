@@ -105,12 +105,12 @@
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
         "upgradeBehavior": "in-place",
         "installCommand": "msiexec /i googlechromestandaloneenterprise64.msi /qn /norestart",
-        "uninstallCommand": "msiexec /x {C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90} /qn /norestart",
+        "uninstallCommand": "msiexec /x {807524DE-67B8-3922-BB35-773E5AFB6EBB} /qn /norestart",
         "installExperience": "system",
         "restartBehavior": "suppress",
         "detectionRule": {
           "type": "msi",
-          "productCode": "{C8B3A0BF-0F75-32C9-B05B-BE6FE9F5ED90}"
+          "productCode": "{807524DE-67B8-3922-BB35-773E5AFB6EBB}"
         },
         "requirements": {
           "minimumOS": "W10-21H2",
