@@ -17,10 +17,10 @@
       },
       "currentVersion": "8.9.8.1",
       "previousVersion": "8.9.8",
-      "availableVersion": "8.9.8.1",
+      "availableVersion": "8.9.9",
       "package": {
-        "setupFile": "npp.8.9.8.1.Installer.x64.msi",
-        "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.8.1/npp.8.9.8.1.Installer.x64.msi",
+        "setupFile": "npp.8.9.9.Installer.x64.msi",
+        "downloadUrl": "https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.9.9/npp.8.9.9.Installer.x64.msi",
         "upgradeBehavior": "in-place",
         "installCommand": "msiexec /i npp.8.9.8.1.Installer.x64.msi /qn /norestart",
         "uninstallCommand": "msiexec /x {5C6F8543-7EA8-40B9-B78F-04C78300DE7F} /qn /norestart",
