@@ -99,7 +99,7 @@
       },
       "currentVersion": "157.0.8103.39",
       "previousVersion": "154.0.8037.58",
-      "availableVersion": "157.0.8103.51",
+      "availableVersion": "157.0.8103.79",
       "package": {
         "setupFile": "googlechromestandaloneenterprise64.msi",
         "downloadUrl": "https://dl.google.com/chrome/install/googlechromestandaloneenterprise64.msi",
@@ -200,7 +200,7 @@
       },
       "currentVersion": "3.2.92.0",
       "previousVersion": null,
-      "availableVersion": "3.2.176.0",
+      "availableVersion": "3.2.181.0",
       "package": {
         "setupFile": "PurviewInfoProtection.msi",
         "downloadUrl": "https://download.microsoft.com/download/5e62f7f5-d616-49f8-b506-f1c6b4f79ba7/PurviewInfoProtection.msi",
